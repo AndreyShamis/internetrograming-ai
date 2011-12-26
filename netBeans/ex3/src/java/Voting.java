@@ -94,7 +94,7 @@ public class Voting extends HttpServlet {
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             retHTML +="<tr>\n"
               + " <td>\n"
-              + "   <div>"+ urlName+"</div>\n"
+              + "   <div><strong>"+ urlName+"</strong></div>\n"
               + "</td>\n"
               + "<td style=\"width:80%;\">\n"
               + "   <div class=\"bar_wrap\">\n"
@@ -119,22 +119,27 @@ public class Voting extends HttpServlet {
            String [] resultOfVotingURL = request.getParameterValues("url"); 
             for(int i = 0;i<resultOfVoting.length;i++){
                 boolean setCookies = false;
-                int points=0 ;
-                if(resultOfVoting[i].equals(""))
-                {
-                       retHTML += "<strong>Bad value.The value must be "
-                               + "between 0 to 10</strong><br/>";
-                }else{
+                int points=-1 ;
+                String url = URLDecoder.decode(resultOfVotingURL[i]);
+
+                try{
                     points = Integer.parseInt(resultOfVoting[i]) ;
                     if(points < 0 || points > 10){
-                        retHTML += "<strong>Bad value.The value must be "
-                                + "between 0 to 10</strong><br/>";
+                        retHTML += "<strong>Bad value for "+url+".The value must be "
+                            + "between 0 to 10</strong><br/>";
                     }
                     else{
                         setCookies = true;
                     }
-                        
                 }
+                catch(Exception ex)
+                {
+                    retHTML += "<strong>Cannot be empty for "+url+".The value must be "
+                            + "between 0 to 10</strong><br/>";
+                }
+
+
+
                 if(setCookies){
                   Iterator<URLclass> itr = URLs.iterator();
                   URLclass  tempURL;
@@ -146,15 +151,17 @@ public class Voting extends HttpServlet {
                         tempURL.SetPoints(points);
                         Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
                         //request.getRemoteHost()
-                        response.addCookie(userCookie);  
                         userCookie.setMaxAge(20);
+                        response.addCookie(userCookie);  
+                        
                         break;
                     }
                   }
                 }
             }
             retHTML +="<br/>"
-                    + "<h2>In few seconds you will be redirected to reults page.</h2>";
+                    + "<h2>In few seconds you will be redirected to reults page.</h2>"
+                    + "<script type=\"text/javascript\">setTimeout('window.location=\"Voting\"',3000);</script>";
         return(retHTML);
     }
  
