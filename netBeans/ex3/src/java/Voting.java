@@ -189,7 +189,7 @@ public class Voting extends HttpServlet {
             if(!searchString.equals("true"))
             {
                 retHTML += "<tr><td>"+urlName+"</td>";
-                retHTML +="<td><input type=\"text\" name=\"grade_value\" "
+                retHTML +="<td><input type=\"text\" maxlength=\"2\" name=\"grade_value\" "
                     + "value=\"\" />"
                     + "<input type=\"hidden\" name=\"url\" "
                     + "value=\""+tempURL.GetURLName()+"\" />"
