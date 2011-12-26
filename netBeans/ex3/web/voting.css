@@ -10,7 +10,13 @@
    TODO customize this sample style
    Syntax recommendation http://www.w3.org/TR/REC-CSS2/
 */
-
+body
+{
+    background-color: #C0C0C0;
+}
+h1{
+    color: 3366FF;
+}
 root { 
     display: block;
 }
@@ -42,9 +48,8 @@ root {
   background-image: -moz-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
   background-image: -o-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
 }
-.left {
-  float: left;
-}
+
+
 .right {
   float: right;
 }
