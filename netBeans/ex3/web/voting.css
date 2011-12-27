@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : voting
     Created on : 24.12.2011, 14:50:39
     Author     : Andrey Shamis & Ilia Gaysinsky
@@ -9,12 +9,20 @@
 body
 {
     background-color: #C0C0C0;
+    text-align: center;
 }
 h1{
-    color: 3366FF;
+    color: #3366FF;
 }
 root { 
     display: block;
+}
+.error{
+    color: red;
+}
+.VotingForm{
+    text-align: right;
+
 }
 
 .votingSection {

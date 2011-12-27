@@ -50,20 +50,26 @@ public class Voting extends HttpServlet {
         responseHTML +="<html>\n"
                 + "<head>\n"
                 + "<title>Servlet Voting</title>\n"
-                + "<link rel=\"stylesheet\" "
-                + "type=\"text/css\" href=\"voting.css\" />\n"
+                + "<link rel='stylesheet' "
+                + "type='text/css' href='voting.css' />\n"
                 + "</head>\n\n<body>\n"
-                + "<h1>  EX3 :: Voting servlet</h1>\n";       
+                + "<h1>  EX3 :: Voting servlet</h1>\n"
+                + "<table width='100%'>"
+                + " <tr>"
+                + "    <td></td>"
+                + "    <td style='width: 80%;'><h1>  EX3 :: Voting servlet</h1></td>"
+                + "    <td></td>"
+                + "  </tr>";       
 
         if(request.getContentType() != null ){
-            responseHTML +=PrintVotingProccess( request, response);
+            responseHTML +="<tr><td></td><td>"+PrintVotingProccess( request, response)+"</td><td></td></tr> ";
         }
         else{
-            responseHTML +=PrintVotingForm((request.getContentType()!=null));
-            responseHTML +=PrintVotingResults();    
+            responseHTML +="<tr><td></td><td>"+PrintVotingForm()+"</td><td></td></tr> ";
+            responseHTML +="<tr><td></td><td>"+PrintVotingResults() +"</td><td></td></tr> ";    
         }
         
-        responseHTML +="</body></html>";
+        responseHTML +="</table></body></html>";
         
         out.println(responseHTML);
         out.close();
@@ -106,9 +112,13 @@ public class Voting extends HttpServlet {
     private String PrintVotingProccess(HttpServletRequest request,HttpServletResponse response)
     {
         String retHTML = "";
+        
         String [] resultOfVoting = request.getParameterValues("grade_value"); 
         String [] resultOfVotingURL = request.getParameterValues("url"); 
             
+        if(resultOfVoting == null || resultOfVotingURL == null){
+            return("<strong class=\"error\">Some of entry of post incorect<strong>");
+        }
         for(int i = 0;i<resultOfVoting.length;i++){
             boolean setCookies = false;
             int points=-1 ;
@@ -132,11 +142,15 @@ public class Voting extends HttpServlet {
             }
 
             if(setCookies){
+                
                 Iterator<URLclass> itr = URLs.iterator();
                 URLclass  tempURL;
+                
                 while(itr.hasNext()){
                     tempURL = itr.next();
+                                            
                     if(tempURL.GetURLName().equals(resultOfVotingURL[i])){
+                        
                         tempURL.SetPoints(points );
                         Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
                         userCookie.setMaxAge(20);
@@ -155,12 +169,14 @@ public class Voting extends HttpServlet {
     }
  
 //==============================================================================        
-  private String PrintVotingForm(boolean ReadCookie){
+  private String PrintVotingForm(){
       
       String retHTML = "";
+      boolean ReturnForm = false;   //  will be set to true if have some entry 
+      //    for wich the user must vote. If no, the form not be retuned
       retHTML = "" +
-        "        <form method=\"post\" action=\"Voting\">\n" +
-        "            <table>\n" +
+        "        <form method='post' action='Voting' class='VotingForm' name='VotingForm'>\n" +
+        "            <table width='100%'>\n" +
         "                <thead>\n" +
         "                    <tr>\n" +
         "                        <th>URL</th>\n" +
@@ -175,18 +191,19 @@ public class Voting extends HttpServlet {
             tempURL = itr.next();
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             String searchString = "";
-            if(ReadCookie ){
-                searchString =getCookieValue(cookies,tempURL.GetURLName()); 
-            }
+           
+            searchString =getCookieValue(cookies,tempURL.GetURLName()); 
+            
        
             if(!searchString.equals("true"))
             {
                 retHTML += "<tr><td>"+urlName+"</td>\n";
-                retHTML +="<td>\n<input type=\"text\" maxlength=\"2\" name=\"grade_value\" "
+                retHTML +="<td>\n<input type='text' maxlength='2' name='grade_value' "
                     + "value=\"\" />\n"
-                    + "<input type=\"hidden\" name=\"url\" "
-                    + "value=\""+tempURL.GetURLName()+"\" />\n"
+                    + "<input type='hidden' name='url' "
+                    + "value='"+tempURL.GetURLName()+"' />\n"
                     + "</td>\n</tr>\n";
+                ReturnForm = true;  //  have return the form
             }
         } 
         retHTML+="</tbody>\n" +
@@ -194,7 +211,11 @@ public class Voting extends HttpServlet {
             "            <input type=\"submit\"  />\n" +
             "        </form>\n";
         
-        return (retHTML);
+        if(ReturnForm){
+            return (retHTML);
+        }else{
+            return("");
+        }
   }
 //==============================================================================
   /**
@@ -243,6 +264,10 @@ public class Voting extends HttpServlet {
      * @return              the name of empty on faild to find
      */
     private  String getCookieValue(Cookie[] cookies,String cookieName){
+        
+        if(cookies == null){
+            return("");    
+        }
         for(int i=0; i<cookies.length; i++) {
             Cookie cookie = cookies[i];
             if (cookieName.equals(cookie.getName())){
