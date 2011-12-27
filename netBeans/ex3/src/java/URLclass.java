@@ -1,38 +1,62 @@
 /*
- * To change this template, choose Tools | Templates
+ * This class provide tools for intelectual work with URL voting
  * and open the template in the editor.
  */
-
+//=============================================================================
+//=============================================================================
+//=============================================================================
 /**
- *
- * @author Admin
+ *  URL voting class
+ * @author Andrey Shamis & Ilia Gaysinsky
  */
+
 public class URLclass {
-    private String URLname;
-    private int points;
-    
-    public URLclass(String URL)
-    {
-        System.out.println("YES" + URL);
-        URLname = URL;
-        System.out.println("YES1" + URL);
+    private String URLname;         //  URL
+    private double points;          //  All points
+    private int voteCount;          //  Number of votes
+//=============================================================================
+    /**
+     * Constructor function
+     * @param URL the url name of this url
+     */
+    public URLclass(String URL){
+        URLname     =   URL;        //  set the url
+        voteCount   =   0;          //  set voting counter
+        points      =   0;          //  set initializing points
     }
-    public boolean SetPoints(int newValue)
-    {
-        if(points < 0 || points > 10)
-        {
-            return(false);
+//=============================================================================
+    /**
+     * Function wich sets the new points of voting for this url
+     * @param newValue the value
+     * @return true if success or false on fail
+     */
+    public boolean SetPoints(int newValue){
+        if(points < 0 || points > 10){
+            return(false);          //  bad value
         }else{
-            points = newValue;
+            //  manipulation with previous resuls
+            points = (points*voteCount + newValue)/++voteCount;
         }
-        return(true);
+        return(true);       //  return true if success
     }
-    public String GetURLName()
-    {
-        return(URLname);
+//=============================================================================
+    /**
+     * Function wicg return the URL
+     * @return the url
+     */
+    public String GetURLName(){
+        return(URLname);    //  return the url
     }
-    public int getPoints()
-    {
-        return(points);
+//=============================================================================
+    /**
+     * Function wich return the curent value of voting reults
+     * @return the voting results
+     */
+    public double getPoints(){
+        return(points);     //  return the voting results
     }
+
 }
+//=============================================================================
+//=============================================================================
+//=============================================================================

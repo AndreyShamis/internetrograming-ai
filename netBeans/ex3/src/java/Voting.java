@@ -1,12 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Voting class. This work home exercise 3.
+ * 
  */
-
+//==============================================================================
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -20,13 +19,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
 /**
- *
- * @author ilia
+ *  Voting class. This work home exercise 3.
+ * @author Andey Shamis & Ilia Gaysinsky
  */
 @WebServlet(name = "Voting", urlPatterns = {"/Voting"})
+
 public class Voting extends HttpServlet {
 
+//==============================================================================
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -38,46 +42,34 @@ public class Voting extends HttpServlet {
             throws ServletException, IOException {
         // Cookies manipulation
         cookies = request.getCookies();
-        
+        String responseHTML = "";
         // Header manipulation
         response.setContentType("text/html;charset=UTF-8");
-        //  Get response object
-        
-        String responseHTML = "";
-        responseHTML +="<html><head>"
-                + "<title>Servlet Voting</title>"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"voting.css\" />"
-                + "</head><body>"
-                + "<h1>  EX3 :: Voting servlet</h1>";       
-        //  Print voting form
-        
         PrintWriter out = response.getWriter();
-        //out.println(searchString);
+        
+        responseHTML +="<html>\n"
+                + "<head>\n"
+                + "<title>Servlet Voting</title>\n"
+                + "<link rel=\"stylesheet\" "
+                + "type=\"text/css\" href=\"voting.css\" />\n"
+                + "</head>\n\n<body>\n"
+                + "<h1>  EX3 :: Voting servlet</h1>\n";       
+
         if(request.getContentType() != null ){
             responseHTML +=PrintVotingProccess( request, response);
         }
         else{
-            responseHTML +=PrintVotingForm();
+            responseHTML +=PrintVotingForm((request.getContentType()!=null));
             responseHTML +=PrintVotingResults();    
         }
         
+        responseHTML +="</body></html>";
         
         out.println(responseHTML);
-
-        out.println("</body></html>");
         out.close();
         
     }
-  private  String getCookieValue(Cookie[] cookies,
-                                      String cookieName) {
-    for(int i=0; i<cookies.length; i++) {
-      Cookie cookie = cookies[i];
-      if (cookieName.equals(cookie.getName()))
-        return(cookie.getValue());
-    }
-    return("");
-  }
-  
+//==============================================================================
   /**
    * 
    * @param out 
@@ -110,107 +102,110 @@ public class Voting extends HttpServlet {
         
         return(retHTML);
   }
-  
+//==============================================================================
     private String PrintVotingProccess(HttpServletRequest request,HttpServletResponse response)
     {
         String retHTML = "";
-        
-           String [] resultOfVoting = request.getParameterValues("grade_value"); 
-           String [] resultOfVotingURL = request.getParameterValues("url"); 
-            for(int i = 0;i<resultOfVoting.length;i++){
-                boolean setCookies = false;
-                int points=-1 ;
-                String url = URLDecoder.decode(resultOfVotingURL[i]);
+        String [] resultOfVoting = request.getParameterValues("grade_value"); 
+        String [] resultOfVotingURL = request.getParameterValues("url"); 
+            
+        for(int i = 0;i<resultOfVoting.length;i++){
+            boolean setCookies = false;
+            int points=-1 ;
+            String url = URLDecoder.decode(resultOfVotingURL[i]);
 
-                try{
-                    points = Integer.parseInt(resultOfVoting[i]) ;
-                    if(points < 0 || points > 10){
-                        retHTML += "<strong>Bad value for "+url+".The value must be "
-                            + "between 0 to 10</strong><br/>";
-                    }
-                    else{
-                        setCookies = true;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    retHTML += "<strong>Cannot be empty for "+url+".The value must be "
+            try{
+                points = Integer.parseInt(resultOfVoting[i]) ;
+                if(points < 0 || points > 10){
+                    retHTML += "<strong>Bad value for "
+                            + url
+                            + ".The value must be "
                             + "between 0 to 10</strong><br/>";
                 }
-
-
-
-                if(setCookies){
-                  Iterator<URLclass> itr = URLs.iterator();
-                  URLclass  tempURL;
-                  while(itr.hasNext())
-                  {
-                    tempURL = itr.next();
-                    if(tempURL.GetURLName().equals(resultOfVotingURL[i]))
-                    {
-                        tempURL.SetPoints(points);
-                        Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
-                        //request.getRemoteHost()
-                        userCookie.setMaxAge(20);
-                        response.addCookie(userCookie);  
-                        
-                        break;
-                    }
-                  }
+                else{
+                    setCookies = true;
                 }
             }
-            retHTML +="<br/>"
-                    + "<h2>In few seconds you will be redirected to reults page.</h2>"
-                    + "<script type=\"text/javascript\">setTimeout('window.location=\"Voting\"',3000);</script>";
+            catch(Exception ex){
+                retHTML += "<strong>Cannot be empty for "+url+".The value must be "
+                        + "between 0 to 10</strong><br/>";
+            }
+
+            if(setCookies){
+                Iterator<URLclass> itr = URLs.iterator();
+                URLclass  tempURL;
+                while(itr.hasNext()){
+                    tempURL = itr.next();
+                    if(tempURL.GetURLName().equals(resultOfVotingURL[i])){
+                        tempURL.SetPoints(points );
+                        Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
+                        userCookie.setMaxAge(20);
+                        response.addCookie(userCookie);  
+                        break;
+                    }
+                }
+            }
+        }
+        retHTML +="<br/>\n"
+                + "<h2>In few seconds you will be redirected "
+                + "to reults page.</h2>\n"
+                + "<script type=\"text/javascript\">"
+                + "setTimeout('window.location=\"Voting\"',3000);</script>\n";
         return(retHTML);
     }
  
-            
-  private String PrintVotingForm(){
+//==============================================================================        
+  private String PrintVotingForm(boolean ReadCookie){
       
       String retHTML = "";
       retHTML = "" +
-        "        <form method=\"post\" action=\"Voting\">" +
-        "            <table>" +
-        "                <thead>" +
-        "                    <tr>" +
-        "                        <th>URL</th>" +
-        "                        <th>Set grade</th>" +
-        "                    </tr>" +
-        "                </thead>" +
-        "                <tbody>"; 
+        "        <form method=\"post\" action=\"Voting\">\n" +
+        "            <table>\n" +
+        "                <thead>\n" +
+        "                    <tr>\n" +
+        "                        <th>URL</th>\n" +
+        "                        <th>Set grade</th>\n" +
+        "                    </tr>\n" +
+        "                </thead>\n" +
+        "                <tbody>\n"; 
         Iterator<URLclass> itr = URLs.iterator();
         URLclass  tempURL;
         while(itr.hasNext()){
             
             tempURL = itr.next();
             String urlName = URLDecoder.decode(tempURL.GetURLName());
-            String searchString = getCookieValue(cookies,tempURL.GetURLName()); 
+            String searchString = "";
+            if(ReadCookie ){
+                searchString =getCookieValue(cookies,tempURL.GetURLName()); 
+            }
+       
             if(!searchString.equals("true"))
             {
-                retHTML += "<tr><td>"+urlName+"</td>";
-                retHTML +="<td><input type=\"text\" maxlength=\"2\" name=\"grade_value\" "
-                    + "value=\"\" />"
+                retHTML += "<tr><td>"+urlName+"</td>\n";
+                retHTML +="<td>\n<input type=\"text\" maxlength=\"2\" name=\"grade_value\" "
+                    + "value=\"\" />\n"
                     + "<input type=\"hidden\" name=\"url\" "
-                    + "value=\""+tempURL.GetURLName()+"\" />"
-                    + "</td></tr>";
+                    + "value=\""+tempURL.GetURLName()+"\" />\n"
+                    + "</td>\n</tr>\n";
             }
         } 
-        retHTML+="</tbody>" +
-            "            </table>" +           
-            "            <input type=\"submit\"  />" +
-            "        </form>";
+        retHTML+="</tbody>\n" +
+            "            </table>\n" +           
+            "            <input type=\"submit\"  />\n" +
+            "        </form>\n";
         
         return (retHTML);
   }
-  
+//==============================================================================
   /**
    * 
    * @throws ServletException 
    */
     @Override
     public void init() throws ServletException {
-        //theparam = getServletConfig().getInitParameter("");
+        
+        super.init();
+        
         ReadFile rf = null;             //  input class
         String url ="";                 //  url
                              //  read default file
@@ -219,14 +214,14 @@ public class Voting extends HttpServlet {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Voting.class.getName()).log(Level.SEVERE, null, ex);
         }
-        URLs = new ArrayList<URLclass>();
-        while (true)               // Loop till the end of URL list
+        URLs = new ArrayList<URLclass>();   //  Set array list to work with URLs
+        
+        while (true)                // Loop till the end of URL list
         {
             try{
                 url = rf.getNextURL(); // get the next URL
                 url = URLEncoder.encode(url, "UTF-8");
                 URLs.add(new URLclass(url)) ;
-
             }catch(IOException e) {                  // IO Exception
                 System.out.println(e.getMessage());
                 break;
@@ -240,7 +235,22 @@ public class Voting extends HttpServlet {
             System.out.println(cl.getMessage());// IO Exception
         }
     }
-
+//==============================================================================
+    /**
+     * Function which searching inside to cookies for some specific cookies name
+     * @param cookies       cookies object
+     * @param cookieName    the name of cookies
+     * @return              the name of empty on faild to find
+     */
+    private  String getCookieValue(Cookie[] cookies,String cookieName){
+        for(int i=0; i<cookies.length; i++) {
+            Cookie cookie = cookies[i];
+            if (cookieName.equals(cookie.getName())){
+                return(cookie.getValue());
+            }
+        }
+        return("");
+    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
@@ -277,8 +287,11 @@ public class Voting extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
-
+//==============================================================================
     private  ArrayList<URLclass> URLs ;
     private Cookie[] cookies;
 
 }
+//==============================================================================
+//==============================================================================
+//==============================================================================
