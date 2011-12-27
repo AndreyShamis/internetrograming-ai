@@ -3,13 +3,16 @@
  * 
  */
 //==============================================================================
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -47,30 +50,30 @@ public class Voting extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
-        responseHTML +="<html>\n"
-                + "<head>\n"
-                + "<title>Servlet Voting</title>\n"
-                + "<link rel='stylesheet' "
-                + "type='text/css' href='voting.css' />\n"
-                + "</head>\n\n<body>\n"
-                + "<h1>  EX3 :: Voting servlet</h1>\n"
-                + "<table width='100%'>"
-                + " <tr>"
-                + "    <td></td>"
-                + "    <td style='width: 80%;'><h1>  EX3 :: Voting servlet</h1></td>"
-                + "    <td></td>"
-                + "  </tr>";       
-
         if(request.getContentType() != null ){
-            responseHTML +="<tr><td></td><td>"+PrintVotingProccess( request, response)+"</td><td></td></tr> ";
-        }
+            VotingProccess( request, response);
+            response.setStatus(301);
+            response.setHeader("Location","/ex3/Voting");
+            response.setHeader( "Connection", "close" );
+        } 
         else{
+            responseHTML +="<html>\n"
+                    + "<head>\n"
+                    + "<title>Servlet Voting</title>\n"
+                    + "<link rel='stylesheet' "
+                    + "type='text/css' href='voting.css' />\n"
+                    + "</head>\n\n<body>\n"
+                    + "<table width='100%'>"
+                    + " <tr>"
+                    + "    <td></td>"
+                    + "    <td style='width:80%;'><h1>  EX3 :: Voting servlet</h1></td>"
+                    + "    <td></td>"
+                    + "  </tr>";       
             responseHTML +="<tr><td></td><td>"+PrintVotingForm()+"</td><td></td></tr> ";
             responseHTML +="<tr><td></td><td>"+PrintVotingResults() +"</td><td></td></tr> ";    
+        
+            responseHTML +="</table></body></html>";
         }
-        
-        responseHTML +="</table></body></html>";
-        
         out.println(responseHTML);
         out.close();
         
@@ -83,12 +86,16 @@ public class Voting extends HttpServlet {
     private  String PrintVotingResults(){
         
         String retHTML = "";
-        retHTML +="<div class=\"votingSection\"><table width=\"100%\">";
-        Iterator<URLclass> itr = URLs.iterator();
+        retHTML +="<h3>Total number of votes: "+VoteCounter+" person.</h3>"
+                + "<div class=\"votingSection\">"
+                + "<table width=\"100%\">";
+        Set s = URLs.entrySet();
+        Iterator itr = s.iterator();
         URLclass  tempURL;
         while(itr.hasNext())
         {
-            tempURL = itr.next();
+            Map.Entry  tempMapEntry =(Map.Entry) itr.next();
+            tempURL = (URLclass)tempMapEntry.getValue();
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             retHTML +="<tr>\n"
               + " <td>\n"
@@ -109,63 +116,56 @@ public class Voting extends HttpServlet {
         return(retHTML);
   }
 //==============================================================================
-    private String PrintVotingProccess(HttpServletRequest request,HttpServletResponse response)
+    private void VotingProccess(HttpServletRequest request,HttpServletResponse response)
     {
-        String retHTML = "";
-        
+        boolean CookiesFlag = false;    //  Variable for know if ned set cookies
         String [] resultOfVoting = request.getParameterValues("grade_value"); 
         String [] resultOfVotingURL = request.getParameterValues("url"); 
             
         if(resultOfVoting == null || resultOfVotingURL == null){
-            return("<strong class=\"error\">Some of entry of post incorect<strong>");
+            return;
+        }
+        
+        String searchString =getCookieValue(cookies,"HaveVoted"); 
+        if(!searchString.equals("true")){
+            Cookie votedCookie = new Cookie("HaveVoted", "true");
+            response.addCookie(votedCookie); 
+            VoteCounter++;
         }
         for(int i = 0;i<resultOfVoting.length;i++){
-            boolean setCookies = false;
             int points=-1 ;
+            CookiesFlag = false;
+            String ErrorCode = "";
             String url = URLDecoder.decode(resultOfVotingURL[i]);
 
             try{
                 points = Integer.parseInt(resultOfVoting[i]) ;
-                if(points < 0 || points > 10){
-                    retHTML += "<strong>Bad value for "
-                            + url
-                            + ".The value must be "
-                            + "between 0 to 10</strong><br/>";
-                }
-                else{
-                    setCookies = true;
-                }
+                CookiesFlag = true;
             }
             catch(Exception ex){
-                retHTML += "<strong>Cannot be empty for "+url+".The value must be "
-                        + "between 0 to 10</strong><br/>";
+                ErrorCode = "1";
             }
 
-            if(setCookies){
-                
-                Iterator<URLclass> itr = URLs.iterator();
-                URLclass  tempURL;
-                
-                while(itr.hasNext()){
-                    tempURL = itr.next();
-                                            
-                    if(tempURL.GetURLName().equals(resultOfVotingURL[i])){
-                        
+            if(CookiesFlag){
+                URLclass  tempURL=URLs.get(resultOfVotingURL[i]);
+                if(tempURL != null){
+                    try{
                         tempURL.SetPoints(points );
                         Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
-                        userCookie.setMaxAge(20);
-                        response.addCookie(userCookie);  
-                        break;
+                        userCookie.setMaxAge(60);       //  TODO :: Change
+                        response.addCookie(userCookie); 
+                    }catch(Exception ex){
+                        ErrorCode = "2";
+                        CookiesFlag = false;
                     }
                 }
             }
+            if(!CookiesFlag){
+                Cookie userCookie = new Cookie(resultOfVotingURL[i], ErrorCode);
+                userCookie.setMaxAge(8);
+                response.addCookie(userCookie);   
+            }
         }
-        retHTML +="<br/>\n"
-                + "<h2>In few seconds you will be redirected "
-                + "to reults page.</h2>\n"
-                + "<script type=\"text/javascript\">"
-                + "setTimeout('window.location=\"Voting\"',3000);</script>\n";
-        return(retHTML);
     }
  
 //==============================================================================        
@@ -184,11 +184,13 @@ public class Voting extends HttpServlet {
         "                    </tr>\n" +
         "                </thead>\n" +
         "                <tbody>\n"; 
-        Iterator<URLclass> itr = URLs.iterator();
+        Set s = URLs.entrySet();
+        Iterator itr = s.iterator();
         URLclass  tempURL;
+        
         while(itr.hasNext()){
-            
-            tempURL = itr.next();
+            Map.Entry  tempMapEntry =(Map.Entry) itr.next();
+            tempURL = (URLclass)tempMapEntry.getValue();
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             String searchString = "";
            
@@ -197,18 +199,27 @@ public class Voting extends HttpServlet {
        
             if(!searchString.equals("true"))
             {
-                retHTML += "<tr><td>"+urlName+"</td>\n";
-                retHTML +="<td>\n<input type='text' maxlength='2' name='grade_value' "
+                retHTML += "<tr><td><span class='VotingFormUrlsNames'>"+urlName+"</span></td>\n";
+                retHTML +="<td class='VotingFormPoints'>\n<input class='PointsBox' type='text' maxlength='2' name='grade_value' "
                     + "value=\"\" />\n"
-                    + "<input type='hidden' name='url' "
-                    + "value='"+tempURL.GetURLName()+"' />\n"
-                    + "</td>\n</tr>\n";
+                    + "<input  type='hidden' name='url' "
+                    + "value='"+tempURL.GetURLName()+"' />\n";
+                if(searchString.equals("1")){
+                    retHTML += "<em class='informationMessage'>"
+                            + "Please enter value</em><br/>";
+                }
+                if(searchString.equals("2")){
+                    retHTML += "<strong class='error'>Bad value"
+                            + ".The value must be "
+                            + "between 0 to 10</strong><br/>";
+                }
+                retHTML +=   "</td>\n</tr>\n";
                 ReturnForm = true;  //  have return the form
             }
         } 
         retHTML+="</tbody>\n" +
             "            </table>\n" +           
-            "            <input type=\"submit\"  />\n" +
+            "            <input style='width:200px;' type='submit' value=' Press to Vote '  />\n" +
             "        </form>\n";
         
         if(ReturnForm){
@@ -224,25 +235,29 @@ public class Voting extends HttpServlet {
    */
     @Override
     public void init() throws ServletException {
-        
-        super.init();
+        String FilePath = "";
+        FilePath = getServletContext().getRealPath("") 
+                + File.separatorChar + ".." 
+                + File.separatorChar + ".." 
+                + File.separatorChar 
+                + getServletConfig().getInitParameter("urlsFile").toString();
         
         ReadFile rf = null;             //  input class
         String url ="";                 //  url
                              //  read default file
-        try {
-            rf = new ReadFile(getServletContext().getRealPath("input.txt"));
+        try { 
+            rf = new ReadFile(FilePath);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Voting.class.getName()).log(Level.SEVERE, null, ex);
         }
-        URLs = new ArrayList<URLclass>();   //  Set array list to work with URLs
-        
+        URLs = new HashMap<String,URLclass>();   //  Set array list to work with URLs
+        VoteCounter = 0;
         while (true)                // Loop till the end of URL list
         {
             try{
                 url = rf.getNextURL(); // get the next URL
                 url = URLEncoder.encode(url, "UTF-8");
-                URLs.add(new URLclass(url)) ;
+                URLs.put(url,new URLclass(url)) ;
             }catch(IOException e) {                  // IO Exception
                 System.out.println(e.getMessage());
                 break;
@@ -313,8 +328,9 @@ public class Voting extends HttpServlet {
     }// </editor-fold>
     
 //==============================================================================
-    private  ArrayList<URLclass> URLs ;
+    private  Map<String,URLclass> URLs ;
     private Cookie[] cookies;
+    private int VoteCounter;
 
 }
 //==============================================================================

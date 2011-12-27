@@ -30,9 +30,11 @@ public class URLclass {
      * @param newValue the value
      * @return true if success or false on fail
      */
-    public boolean SetPoints(int newValue){
-        if(points < 0 || points > 10){
-            return(false);          //  bad value
+    public boolean SetPoints(int newValue) throws Exception{
+        if(newValue < 0 || newValue > 10){
+            throw new Exception("<strong>Bad value"
+                            + ".The value must be "
+                            + "between 0 to 10</strong><br/>");   //  bad value
         }else{
             //  manipulation with previous resuls
             points = (points*voteCount + newValue)/++voteCount;

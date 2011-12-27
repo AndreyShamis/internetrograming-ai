@@ -14,8 +14,23 @@ body
 h1{
     color: #3366FF;
 }
+.PointsBox{
+    width: 30px;
+    border: 1px solid #66A3E2;
+}
+.VotingFormPoints{
+    text-align: left;
+    width: 65%;
+}
+.VotingFormUrlsNames{
+    font-size: 24px;
+    color: #33cc00;
+}
 root { 
     display: block;
+}
+.informationMessage{
+    color: green;
 }
 .error{
     color: red;
@@ -25,6 +40,9 @@ root {
 
 }
 
+th{
+    text-align: left;
+}
 .votingSection {
   background: #4D4D4D;
 }
