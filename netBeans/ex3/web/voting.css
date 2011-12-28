@@ -21,6 +21,24 @@ h1{
 .VotingFormPoints{
     text-align: left;
     width: 65%;
+}  
+.urlDesc{
+    font-size: 8px;
+    font-family: serif;
+    text-align: right;
+    color: #cccccc;
+    float: right;
+}
+.cssLineNotOdd{
+    background-color: #c6ccc6;
+}
+.cssLineOdd{
+    background-color: #d9eed9;
+}
+.votingFormUrlLinkBox{
+    border: 1px solid #33ffcc;
+    background-color: #006633;
+    width:100%;
 }
 .VotingFormUrlsNames{
     font-size: 24px;

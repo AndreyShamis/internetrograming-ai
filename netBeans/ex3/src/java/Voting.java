@@ -66,7 +66,7 @@ public class Voting extends HttpServlet {
                     + "<table width='100%'>"
                     + " <tr>"
                     + "    <td></td>"
-                    + "    <td style='width:80%;'><h1>  EX3 :: Voting servlet</h1></td>"
+                    + "    <td class='votingSection'style='width:80%;'><h1>  EX3 :: Voting servlet</h1></td>"
                     + "    <td></td>"
                     + "  </tr>";       
             responseHTML +="<tr><td></td><td>"+PrintVotingForm()+"</td><td></td></tr> ";
@@ -86,7 +86,9 @@ public class Voting extends HttpServlet {
     private  String PrintVotingResults(){
         
         String retHTML = "";
-        retHTML +="<h3>Total number of votes: "+VoteCounter+" person.</h3>"
+        retHTML +="<h3>Total number of votes: "+VoteCounter+" person .<em> This"
+                + " actualy also if somebody has voted only for one or more URLs. </em></h3>"
+                + ""
                 + "<div class=\"votingSection\">"
                 + "<table width=\"100%\">";
         Set s = URLs.entrySet();
@@ -99,13 +101,17 @@ public class Voting extends HttpServlet {
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             retHTML +="<tr>\n"
               + " <td>\n"
-              + "   <div><strong>"+ urlName+"</strong></div>\n"
+              + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> *"
+                    + "<label class='urlDesc'>Votes : _. Points : 7 / 7.544 (Int / Double)</label></div>\n"
               + "</td>\n"
               + "<td style=\"width:80%;\">\n"
               + "   <div class=\"bar_wrap\">\n"
-              + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n"
-              + "           <div class=\"right\">" + tempURL.getPoints()  + "</div>\n"
-              + "       </div>\n"
+              + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n";
+              if(tempURL.getPoints() > 1){
+                  
+                  retHTML+="           <div class=\"right\">" + tempURL.getPoints()  + "</div>\n";
+              }
+              retHTML+= "       </div>\n"
               + "   </div>\n"
               + " </td>\n"
               + "</tr>";        
@@ -178,15 +184,17 @@ public class Voting extends HttpServlet {
         "        <form method='post' action='Voting' class='VotingForm' name='VotingForm'>\n" +
         "            <table width='100%'>\n" +
         "                <thead>\n" +
-        "                    <tr>\n" +
+        "                    <tr class='votingSection'>\n" +
         "                        <th>URL</th>\n" +
-        "                        <th>Set grade</th>\n" +
+        "                        <th>Set grade . The value must be between 0 to 10.</th>\n" +
         "                    </tr>\n" +
         "                </thead>\n" +
         "                <tbody>\n"; 
         Set s = URLs.entrySet();
         Iterator itr = s.iterator();
         URLclass  tempURL;
+        boolean flagOdd=false;
+        
         
         while(itr.hasNext()){
             Map.Entry  tempMapEntry =(Map.Entry) itr.next();
@@ -199,8 +207,18 @@ public class Voting extends HttpServlet {
        
             if(!searchString.equals("true"))
             {
-                retHTML += "<tr><td><span class='VotingFormUrlsNames'>"+urlName+"</span></td>\n";
-                retHTML +="<td class='VotingFormPoints'>\n<input class='PointsBox' type='text' maxlength='2' name='grade_value' "
+                String lineColor="";
+                
+                if(flagOdd){
+                 lineColor = "cssLineOdd";
+                 flagOdd =false;
+                }
+                else{
+                   lineColor = "cssLineNotOdd";
+                   flagOdd = true;
+                }
+                retHTML += "<tr><td class='"+lineColor+"'><span class='VotingFormUrlsNames'>"+urlName+"</span></td>\n";
+                retHTML +="<td class='VotingFormPoints "+lineColor+"'>\n<input class='PointsBox' type='text' maxlength='2' name='grade_value' "
                     + "value=\"\" />\n"
                     + "<input  type='hidden' name='url' "
                     + "value='"+tempURL.GetURLName()+"' />\n";
@@ -219,7 +237,7 @@ public class Voting extends HttpServlet {
         } 
         retHTML+="</tbody>\n" +
             "            </table>\n" +           
-            "            <input style='width:200px;' type='submit' value=' Press to Vote '  />\n" +
+            "           <div class='votingSection' style='width:100%'> <input style='width:200px;' type='submit' value=' Press to Vote '  /></div>\n" +
             "        </form>\n";
         
         if(ReturnForm){
@@ -237,8 +255,6 @@ public class Voting extends HttpServlet {
     public void init() throws ServletException {
         String FilePath = "";
         FilePath = getServletContext().getRealPath("") 
-                + File.separatorChar + ".." 
-                + File.separatorChar + ".." 
                 + File.separatorChar 
                 + getServletConfig().getInitParameter("urlsFile").toString();
         
