@@ -45,141 +45,176 @@ public class Voting extends HttpServlet {
             throws ServletException, IOException {
         // Cookies manipulation
         cookies = request.getCookies();
-        String responseHTML = "";
+
         // Header manipulation
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        PrintWriter out = response.getWriter(); //  get response out object
         
         if(request.getContentType() != null ){
             VotingProccess( request, response);
             response.setStatus(301);
-            response.setHeader("Location","/ex3/Voting");
+            response.setHeader("Location",ServletPATH);
             response.setHeader( "Connection", "close" );
-        } 
-        else{
-            responseHTML +="<html>\n"
-                    + "<head>\n"
-                    + "<title>Servlet Voting</title>\n"
-                    + "<link rel='stylesheet' "
-                    + "type='text/css' href='voting.css' />\n"
-                    + "</head>\n\n<body>\n"
-                    + "<table width='100%'>"
-                    + " <tr>"
-                    + "    <td></td>"
-                    + "    <td class='votingSection'style='width:80%;'><h1>  EX3 :: Voting servlet</h1></td>"
-                    + "    <td></td>"
-                    + "  </tr>";       
-            responseHTML +="<tr><td></td><td>"+PrintVotingForm()+"</td><td></td></tr> ";
-            responseHTML +="<tr><td></td><td>"+PrintVotingResults() +"</td><td></td></tr> ";    
-        
-            responseHTML +="</table></body></html>";
+        }else{
+            out.println(PrepareHTMLbody());
         }
-        out.println(responseHTML);
-        out.close();
         
+        out.close();
+    }
+//==============================================================================
+/**
+     * Function wich print HTML out of main page include all sections
+     * @return 
+     */
+    private String PrepareHTMLbody()
+    {
+        String retHTML = "";            //  Return variable
+        //  Buld the page
+        retHTML +="<html>\n<head>\n"
+                + "<title>Servlet Voting</title>\n"
+                + "<link rel='stylesheet' "
+                + "type='text/css' href='voting.css' />\n"
+                + "</head>\n\n<body>\n"
+                + "<table width='100%'><tr><td></td>"
+                + "    <td class='votingSection'style='width:80%;'>"
+                + "<h1>  EX3 :: Voting servlet</h1></td>"
+                + "    <td></td></tr>";       
+        //  Printout the forms of Voting Form and Result form
+        retHTML +="<tr><td></td><td>"+PrintVotingForm()+"</td><td></td></tr> ";
+        retHTML +="<tr><td></td><td>"+PrintVotingResults() +"</td><td></td></tr>";    
+        retHTML +="</table></body></html>"; //  Close body and HTML    
+        return retHTML;                 //  return value
     }
 //==============================================================================
   /**
-   * 
-   * @param out 
+   * Function wich prepare voting results for out into the browser screen.
+   * But to know the HTML will be retunded to script wich call to this function
+   * @return The HTML builded for voting results
    */
     private  String PrintVotingResults(){
-        
-        String retHTML = "";
+        String retHTML  = "";               //  HML will be returned
+        Set s           = URLs.entrySet();  //  Set of map used for DS
+        Iterator itr    = s.iterator();     //  Iterator used in print
+        URLclass tempURL= null;             //  temp object for each URLs
+        //  Prepare out for table of results
         retHTML +="<h3>Total number of votes: "+VoteCounter+" person .<em> This"
                 + " actualy also if somebody has voted only for one or more URLs. </em></h3>"
                 + ""
-                + "<div class=\"votingSection\">"
-                + "<table width=\"100%\">";
-        Set s = URLs.entrySet();
-        Iterator itr = s.iterator();
-        URLclass  tempURL;
-        while(itr.hasNext())
-        {
+                + "<div class='votingSection'>"
+                + "<table width='100%'>";
+
+        //  For each entry in data structure
+        while(itr.hasNext()){
+            //  Get map entry
             Map.Entry  tempMapEntry =(Map.Entry) itr.next();
+            //  Convert map entry to normal class
             tempURL = (URLclass)tempMapEntry.getValue();
+            //  Convert encoded URL name
             String urlName = URLDecoder.decode(tempURL.GetURLName());
-            retHTML +="<tr>\n"
-              + " <td>\n"
+            //  Start build HTML
+            retHTML +="<tr>\n<td>\n"
               + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> *"
-                    + "<label class='urlDesc'>Votes : _. Points : 7 / 7.544 (Int / Double)</label></div>\n"
-              + "</td>\n"
-              + "<td style=\"width:80%;\">\n"
+              + " <label class='urlDesc'>Votes : _. Points : "+tempURL.getPoints()+""
+              + " / "+(int)tempURL.getPoints()+" (Int / Double)</label></div>\n"        //  TODO :: Check this KETA code <int>
+              + "</td>\n<td style=\"width:80%;\">\n"
               + "   <div class=\"bar_wrap\">\n"
               + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n";
-              if(tempURL.getPoints() > 1){
-                  
-                  retHTML+="           <div class=\"right\">" + tempURL.getPoints()  + "</div>\n";
-              }
-              retHTML+= "       </div>\n"
-              + "   </div>\n"
-              + " </td>\n"
-              + "</tr>";        
+            //  If points value more than 0.5 print it into bar
+            if(tempURL.getPoints() >= 0.5){
+                  retHTML+="<div class=\"right\">" +tempURL.getPoints()+ "</div>\n";
+            }
+            //  Close HTML for this entry
+            retHTML+= "</div>\n</div>\n</td>\n</tr>";        
         } 
-
-        retHTML +="</table></div>";
+        retHTML +="</table></div>";     //  Close HTML for results
         
-        return(retHTML);
+        return(retHTML);                //  Return builded HTML
   }
 //==============================================================================
-    private void VotingProccess(HttpServletRequest request,HttpServletResponse response)
-    {
+/**
+     * This function do the process of voting. Calculate the data posted by user
+     * @param request   variable contain posted data
+     * @param response  variable will contain new cookies wich be returned to user
+     */
+    private void VotingProccess(HttpServletRequest request,
+            HttpServletResponse response){
         boolean CookiesFlag = false;    //  Variable for know if ned set cookies
-        String [] resultOfVoting = request.getParameterValues("grade_value"); 
+        //  String arrays for posted data
+        String [] resultOfVoting    = request.getParameterValues("grade_value"); 
         String [] resultOfVotingURL = request.getParameterValues("url"); 
             
+        //  Check if posted arrays contain something
         if(resultOfVoting == null || resultOfVotingURL == null){
-            return;
+            return;                     //  exit from function
         }
-        
+        //  Search for cookies wich tall as if user was voted one or more
         String searchString =getCookieValue(cookies,"HaveVoted"); 
         if(!searchString.equals("true")){
+            //  If not found create 
             Cookie votedCookie = new Cookie("HaveVoted", "true");
             response.addCookie(votedCookie); 
-            VoteCounter++;
+            VoteCounter++;              //  Increase the counter
         }
+        //  For each entry in post of URLs array
         for(int i = 0;i<resultOfVoting.length;i++){
-            int points=-1 ;
-            CookiesFlag = false;
-            String ErrorCode = "";
+            int points=-1 ;             //  temp variable
+            CookiesFlag = false;        //  cookies flag
+            String ErrorCode = "";      //  Error code for cookies
+            //  Decode encoded URLs
             String url = URLDecoder.decode(resultOfVotingURL[i]);
 
             try{
+                //  Convert points value into int from string
                 points = Integer.parseInt(resultOfVoting[i]) ;
-                CookiesFlag = true;
-            }
-            catch(Exception ex){
+                CookiesFlag = true;     //  if success set this flag
+            }catch(Exception ex){       //  else set error code 1
                 ErrorCode = "1";
             }
-
+            //  If success convert the string into int
             if(CookiesFlag){
+                //  Get class of some URLs from map by UL name
                 URLclass  tempURL=URLs.get(resultOfVotingURL[i]);
+                //  Check if the object not null
                 if(tempURL != null){
                     try{
+                        //  Set new points
                         tempURL.SetPoints(points );
                         Cookie userCookie = new Cookie(resultOfVotingURL[i], "true");
-                        userCookie.setMaxAge(60);       //  TODO :: Change
-                        response.addCookie(userCookie); 
+                        userCookie.setMaxAge(CookiesTime);  //  time of cookies
+                        response.addCookie(userCookie);     //  add cookies
                     }catch(Exception ex){
-                        ErrorCode = "2";
-                        CookiesFlag = false;
+                        //  This section can happend if the value not in the range
+                        ErrorCode = "2";                    //  set error code
+                        CookiesFlag = false;                //  set flag
                     }
                 }
             }
+            //  This section happen if user was vote for one or more url 
+            //  only once for eacvh user
             if(!CookiesFlag){
+                //  Create cookies
                 Cookie userCookie = new Cookie(resultOfVotingURL[i], ErrorCode);
-                userCookie.setMaxAge(8);
-                response.addCookie(userCookie);   
+                userCookie.setMaxAge(8);        //  Time to live
+                response.addCookie(userCookie); //  Add cookie
             }
         }
     }
  
-//==============================================================================        
+//==============================================================================   
+/**
+     * Functiob wich print the voting form 
+     * @return The html bulded voting form
+     */
   private String PrintVotingForm(){
       
-      String retHTML = "";
+      String    retHTML     = "";   //  Return value
+      URLclass  tempURL;            //  temp variable used in print each url
+      boolean   flagOdd     = false;//  odd variable used for each lines
+      Set s                 = URLs.entrySet();  //  data structure
+      Iterator itr          = s.iterator();     //  iterator for data structure
       boolean ReturnForm = false;   //  will be set to true if have some entry 
       //    for wich the user must vote. If no, the form not be retuned
+      
       retHTML = "" +
         "        <form method='post' action='Voting' class='VotingForm' name='VotingForm'>\n" +
         "            <table width='100%'>\n" +
@@ -190,60 +225,66 @@ public class Voting extends HttpServlet {
         "                    </tr>\n" +
         "                </thead>\n" +
         "                <tbody>\n"; 
-        Set s = URLs.entrySet();
-        Iterator itr = s.iterator();
-        URLclass  tempURL;
-        boolean flagOdd=false;
-        
-        
+
+
         while(itr.hasNext()){
+            String searchString = "";   //  value in cookes ret
+            //  Get next entry in data structure
             Map.Entry  tempMapEntry =(Map.Entry) itr.next();
+            //  Get value in next entry
             tempURL = (URLclass)tempMapEntry.getValue();
+            //  Decode the encoded URLs
             String urlName = URLDecoder.decode(tempURL.GetURLName());
-            String searchString = "";
-           
+            //  Search vookies for this URL entry
             searchString =getCookieValue(cookies,tempURL.GetURLName()); 
-            
-       
-            if(!searchString.equals("true"))
-            {
-                String lineColor="";
-                
+
+            if(!searchString.equals("true")){
+                String lineColor="";            //  css in next line
+                // Odd lines manipulations
                 if(flagOdd){
-                 lineColor = "cssLineOdd";
-                 flagOdd =false;
+                    lineColor = "cssLineOdd";   //  Set css for odd line
+                    flagOdd =false;
+                }else{
+                    lineColor = "cssLineNotOdd";//  Set css for not odd line
+                    flagOdd = true;
                 }
-                else{
-                   lineColor = "cssLineNotOdd";
-                   flagOdd = true;
-                }
-                retHTML += "<tr><td class='"+lineColor+"'><span class='VotingFormUrlsNames'>"+urlName+"</span></td>\n";
-                retHTML +="<td class='VotingFormPoints "+lineColor+"'>\n<input class='PointsBox' type='text' maxlength='2' name='grade_value' "
-                    + "value=\"\" />\n"
-                    + "<input  type='hidden' name='url' "
-                    + "value='"+tempURL.GetURLName()+"' />\n";
+                //  Print into variable html text
+                retHTML += "<tr><td class='"+lineColor+"'>"
+                        + "<span class='VotingFormUrlsNames'>"
+                        + urlName+"</span></td>\n";
+                retHTML +="<td class='VotingFormPoints "+lineColor+"'>\n"
+                        + "<input class='PointsBox' type='text' "
+                        + "maxlength='2' name='grade_value' "
+                        + "value=\"\" />\n"
+                        + "<input  type='hidden' name='url' "
+                        + "value='"+tempURL.GetURLName()+"' />\n";
+                //  Check if the prev value not was a some number
                 if(searchString.equals("1")){
                     retHTML += "<em class='informationMessage'>"
                             + "Please enter value</em><br/>";
                 }
+                //  Check if the previous value was in bad range
                 if(searchString.equals("2")){
                     retHTML += "<strong class='error'>Bad value"
                             + ".The value must be "
                             + "between 0 to 10</strong><br/>";
                 }
-                retHTML +=   "</td>\n</tr>\n";
+                retHTML +=   "</td>\n</tr>\n";  //  Close table tr
                 ReturnForm = true;  //  have return the form
             }
         } 
+        //  Close table
         retHTML+="</tbody>\n" +
-            "            </table>\n" +           
-            "           <div class='votingSection' style='width:100%'> <input style='width:200px;' type='submit' value=' Press to Vote '  /></div>\n" +
-            "        </form>\n";
+            "            </table>"
+                + "<div class='votingSection' style='width:100%'>"
+                + "<input style='width:200px;' type='submit' "
+                + "value=' Press to Vote '  /></div>"
+                + "</form>\n";
         
-        if(ReturnForm){
-            return (retHTML);
-        }else{
-            return("");
+        if(ReturnForm){         //  If have same entry to vote return the table
+            return (retHTML);   //  return builded html text
+        }else{                  //  else if no any URLs to vote
+            return("");         //  Not return the table
         }
   }
 //==============================================================================
@@ -266,15 +307,15 @@ public class Voting extends HttpServlet {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Voting.class.getName()).log(Level.SEVERE, null, ex);
         }
-        URLs = new HashMap<String,URLclass>();   //  Set array list to work with URLs
+        URLs = new HashMap<String,URLclass>();  //  Set array list to work with URLs
         VoteCounter = 0;
-        while (true)                // Loop till the end of URL list
+        while (true)                            // Loop till the end of URL list
         {
             try{
-                url = rf.getNextURL(); // get the next URL
+                url = rf.getNextURL();          // get the next URL
                 url = URLEncoder.encode(url, "UTF-8");
                 URLs.put(url,new URLclass(url)) ;
-            }catch(IOException e) {                  // IO Exception
+            }catch(IOException e) {             // IO Exception
                 System.out.println(e.getMessage());
                 break;
             }catch(Exception endFile){
@@ -296,16 +337,17 @@ public class Voting extends HttpServlet {
      */
     private  String getCookieValue(Cookie[] cookies,String cookieName){
         
-        if(cookies == null){
-            return("");    
+        if(cookies == null){    //  Check if object in not null
+            return("");         //  return nothing
         }
+        //  Start search in cookie array for entry wich equal to given value
         for(int i=0; i<cookies.length; i++) {
-            Cookie cookie = cookies[i];
-            if (cookieName.equals(cookie.getName())){
-                return(cookie.getValue());
+            Cookie cookie = cookies[i];                 //  get this cookie
+            if (cookieName.equals(cookie.getName())){   //  compare names
+                return(cookie.getValue());              //  if eq, ret the value
             }
         }
-        return("");
+        return("");             //  return nothing becouse not found any thing
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -347,6 +389,8 @@ public class Voting extends HttpServlet {
     private  Map<String,URLclass> URLs ;
     private Cookie[] cookies;
     private int VoteCounter;
+    private String ServletPATH  =   "/ex3/Voting";
+    private int CookiesTime     =   60*60*24*30;
 
 }
 //==============================================================================
