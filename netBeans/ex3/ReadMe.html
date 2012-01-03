@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>EX3  ReadMe file </title>
+</head>
+<body>
+<hr>
+<hr>
+<h1>EX3 :: Exercise 3 in Internet Programing and Java Language :: Voting system</h1>‫
+<hr>
+  <table width="100%">
+    <tr>
+      <td colspan="3"><h2>Students details</h2></td>
+      <td><h2>Javadoc link</h2></td>
+    </tr>
+    <tr>
+      <td><strong>Andrey Shamis</strong></td>
+      <td>321470882</td>
+      <td><a href="mailto:lolnik@gmail.com">lolnik@gmail.com</a></td>
+      <td rowspan="2"><a target="_blank" href="dist/javadoc/index.html">Link to javadoc of EX2</a><br><em>Build with option for include private methods and variables</em></td>
+    </tr>
+    <tr>
+      <td><strong>Ilia Gaysinsky</strong></td>
+      <td>309480051</td>
+      <td><a href="mailto:apalon83@gmail.com">apalon83@gmail.com</a></td>
+    </tr>
+  </table>
+<hr>
+<h2>Description of project</h2>
+
+&nbsp;&nbsp;&nbsp;In this exercise we build program which read text file(input file) and for each line,
+which must content correct URL to same web page, downloading the web page content and counting
+images inside the page.
+<p>&nbsp;&nbsp;&nbsp;After reading and counting the program write into database the result
+of execution. The result of execution of the program is the URL read from text input
+file and the number of images located inside the web page. Also need to say the table in
+data base build in this way that the URL can be write into table only once. <br>
+Also we have function which can update the result if execution was runs in back and the content of
+same page was changed and now we execute the program , and if number of images was
+changed its possible to write the changes into data base. But in depend to exercise
+notes we turn off this function, that's mean the function still useable but we didn't
+use in our program.
+</p>
+<hr>
+<h2>How to use</h2>
+
+<h3>How to build source files</h3>
+&nbsp;For build the project please use NetBeans. <em>(<a href="http://netbeans.org/downloads/index.html" target="_blank">Download link</a>) Website netbeans.org .</em><br>
+<strong>More info:</strong>
+<table width="100%">
+  <tr>
+    <td>&nbsp;Tested environment </td>
+    <td>NetBeans IDE 7.0.1</td>
+  </tr>
+  <tr>
+    <td>&nbsp;JDK version</td>
+    <td>1.7</td>
+  </tr>
+</table>
+<strong>Derby Usage:</strong> You also need to configure development environment , In Netbeans enter to:<br>
+<strong> Right click on project in project window -> Propeties ->Librarys->Compiling ->set "Add JAR or folder"->End select ../derby.jar </strong>
+<br>
+<strong>Example For input file entry: </strong>
+<pre>
+http://www.hadassah.ac.il
+http://google.com
+</pre>
+
+<h3>Running</h3>
+&nbsp;For run the program u need provide the program by input text file wich must include links of sites which you want set for counting images by scanning the content of this URLs.This file you must provide to program by give the file path in parameter in command line.
+<br>Please enter to folder dist:<br>
+<pre>
+java -cp "derby.jar;ex2.jar"    ex2.Ex2    "INPUT FILE NAME"
+</pre>
+where derby.jar and ex2.jar files wich must be exist in folder where your console PWD located now.
+
+<h3>Help</h3>
+Also in time of run the program you can see indication of all process such:
+<ul>
+  <li>If the url exist in database
+  <li>If ocured problem with reading input file
+  <li>If ocured error in save to database
+  <li>Creation of database(Sure,he database will be created only once)
+  <li>Also if the URL is broken
+</ul>
+<hr>
+<hr>
+<h2>Design</h2>
+&nbsp;&nbsp;&nbsp;It is worth noting that in our version of the program when working with references,
+and processing of their correctness, in the sense of fair use, there are several types of errors that may occur.
+<p>
+&nbsp;&nbsp;&nbsp;Architecture is as follows, for each link received (no matter from where, in our case file),
+we (the program) is on the next adrress and download the contents of this page for content,
+counting images containd inside the content.So here worth paying attention to what we do not read the
+links all at once and take the one performing the operation for each of downloads and counting, and
+again take the following link. This was done to the fact that we could handle the exception in each
+case in the main program code, but not in the class which is responsible for reading.<br>
+To store data out of the program used Derby sql . For his work with the database responsibility of
+the model class (see the description of the file).<br>
+Our program also use <strong>exception</strong> not only for errors. In some keys we provide ours exception.
+</p>
+<hr>
+
+<h2>Some points</h2>
+&nbsp;&nbsp;&nbsp;Additional information about checking references.
+Due to the fact that the job is said to check the end of the file (extention) in the presence of an HTML or HTM ​​or anything,
+but in our course is said that it suffices to check references and the beginning of the end states the following
+"once you try to connect to the URL, if it is invalid you will get an exception and process it as some invalid URL "which in
+turn contradicts the job because no one banned in the latter case, the link ends with php or asp apsx or some other extention
+configured by system administrator of some web server. <br>
+So we decided it would be right to condition the second case. All the more so when there is no file extention,
+this case includes all the options and all of the said above.
+<hr>
+<h2>Files</h2>
+<table>
+  <tr>
+    <td><strong>File name</strong></td>
+    <td><strong>Description</strong></td>
+  </tr>
+  <tr>
+    <td>Configuration.properties&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td><em>Settings for derby(DataBase) class</em> </td>
+  </tr>
+  <tr>
+    <td>DataBase.java </td>
+    <td><em>DB interface</em></td>
+  </tr>
+  <tr>
+    <td>DerbyDataBase.java</td>
+    <td><em>Implimentation of DB</em></td>
+  </tr>
+  <tr>
+    <td>Ex2.java</td>
+    <td><em>Main program</em></td>
+  </tr>
+  <tr>
+    <td>ReadFile.java</td>
+    <td><em>Implimentation of Read</em></td>
+  </tr>
+  <tr>
+    <td>ReadInput.java</td>
+    <td><em>Read interface</em></td>
+  </tr>
+  <tr>
+    <td>SendOutput.java</td>
+    <td><em>Output interface</em></td>
+  </tr>
+  <tr>
+    <td>SendToSTDOUT.java</td>
+    <td><em>Implimentation of Output</em></td>
+  </tr>
+  <tr>
+    <td>derby.jar</td>
+    <td><em>Library need for SQL service</em></td>
+  </tr>
+  <tr>
+    <td>input.txt</td>
+    <td><em>Example of input file</em></td>
+  </tr>
+</table>
+<hr>
+<h4>Exception: Error code</h4>
+<ul>
+  <li>#1-Input file not exist
+  <li>#2-Error On read from input
+  <li>#3-DB error on Connect
+  <li>#4-DB error on Read
+</ul>
+<hr>
+<h4>Bugs: no known bugs. </h4>  <br>
+<hr>
+<hr>
+</body>
+</html>

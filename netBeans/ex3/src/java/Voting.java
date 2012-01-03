@@ -26,7 +26,7 @@ import javax.servlet.http.Cookie;
 //==============================================================================
 //==============================================================================
 /**
- *  Voting class. This work home exercise 3.
+ * Voting class. This home work exercise 3.
  * @author Andey Shamis & Ilia Gaysinsky
  */
 @WebServlet(name = "Voting", urlPatterns = {"/Voting"})
@@ -50,7 +50,7 @@ public class Voting extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter(); //  get response out object
         
-        if(request.getContentType() != null ){
+        if(request.getContentType() != null ){                                      //HASER TEUD
             VotingProccess( request, response);
             response.setStatus(301);
             response.setHeader("Location",ServletPATH);
@@ -93,12 +93,27 @@ public class Voting extends HttpServlet {
    */
     private  String PrintVotingResults(){
         String retHTML  = "";               //  HML will be returned
+        String userInfo = "";               //  Information for user
         Set s           = URLs.entrySet();  //  Set of map used for DS
         Iterator itr    = s.iterator();     //  Iterator used in print
         URLclass tempURL= null;             //  temp object for each URLs
+        
+        // If input file is missing - print error
+        if(fileNotFound){
+            userInfo +="<h3>ERROR: Input file of URLs is Missing</h3>";  
+        }
+        
+        // If input file is empty - print error
+        else if(fileIsEmpty){
+            userInfo +="<h3>ERROR: Input file of URLs is Empty</h3>";
+        }
         //  Prepare out for table of results
-        retHTML +="<h3>Total number of votes: "+VoteCounter+" person .<em> This"
-                + " actualy also if somebody has voted only for one or more URLs. </em></h3>"
+        else{
+            userInfo +="<h3>Total number of persons that have votes is: "+VoteCounter+" person .<em> Note:"
+                     + " It counts Persons that have vote (NOT VOTS it self!!!!) </em></h3>";
+        }
+        //  Prepare out for table of results
+        retHTML +=userInfo
                 + ""
                 + "<div class='votingSection'>"
                 + "<table width='100%'>";
@@ -113,20 +128,21 @@ public class Voting extends HttpServlet {
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             //  Start build HTML
             retHTML +="<tr>\n<td>\n"
-              + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> *"
-              + " <label class='urlDesc'>Votes : _. Points : "+tempURL.getPoints()+""
-              + " / "+(int)tempURL.getPoints()+" (Int / Double)</label></div>\n"        //  TODO :: Check this KETA code <int>
-              + "</td>\n<td style=\"width:80%;\">\n"
-              + "   <div class=\"bar_wrap\">\n"
-              + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n";
+            + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> *"
+            + " <label class='urlDesc'>Votes : _. Points : "+tempURL.getPoints()+""
+            + " / "+(int)tempURL.getPoints()+" (Int / Double)</label></div>\n"        //  TODO :: Check this KETA code <int>
+            + "</td>\n<td style=\"width:80%;\">\n"
+            + "   <div class=\"bar_wrap\">\n"
+            + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n";
             //  If points value more than 0.5 print it into bar
             if(tempURL.getPoints() >= 0.5){
-                  retHTML+="<div class=\"right\">" +tempURL.getPoints()+ "</div>\n";
+                retHTML+="<div class=\"right\">" +tempURL.getPoints()+ "</div>\n";
             }
             //  Close HTML for this entry
             retHTML+= "</div>\n</div>\n</td>\n</tr>";        
         } 
         retHTML +="</table></div>";     //  Close HTML for results
+        
         
         return(retHTML);                //  Return builded HTML
   }
@@ -294,8 +310,9 @@ public class Voting extends HttpServlet {
    */
     @Override
     public void init() throws ServletException {
+        int counter = 0;      // count num of URLs have read from input file
         String FilePath = "";
-        FilePath = getServletContext().getRealPath("") 
+        FilePath = getServletContext().getRealPath("") // get input file fath
                 + File.separatorChar 
                 + getServletConfig().getInitParameter("urlsFile").toString();
         
@@ -303,13 +320,14 @@ public class Voting extends HttpServlet {
         String url ="";                 //  url
                              //  read default file
         try { 
-            rf = new ReadFile(FilePath);
+            rf = new ReadFile(FilePath);    // create file reader
         } catch (FileNotFoundException ex) {
+            fileNotFound = true;
             Logger.getLogger(Voting.class.getName()).log(Level.SEVERE, null, ex);
         }
-        URLs = new HashMap<String,URLclass>();  //  Set array list to work with URLs
+        URLs = new HashMap<String,URLclass>();  // Set Hash Map to work with URLs
         VoteCounter = 0;
-        while (true)                            // Loop till the end of URL list
+        while (true)                            // Loop till the end of URL Hash Map
         {
             try{
                 url = rf.getNextURL();          // get the next URL
@@ -321,11 +339,15 @@ public class Voting extends HttpServlet {
             }catch(Exception endFile){
                 break;
             }
+            counter++;                          // count num of urls
         }
         try{
             rf.close();                         // close input reder file.
         }catch(IOException cl){
             System.out.println(cl.getMessage());// IO Exception
+        }
+        if(counter == 0){                       // check if file is empty
+            fileIsEmpty = true;
         }
     }
 //==============================================================================
@@ -386,11 +408,13 @@ public class Voting extends HttpServlet {
     }// </editor-fold>
     
 //==============================================================================
-    private  Map<String,URLclass> URLs ;
-    private Cookie[] cookies;
-    private int VoteCounter;
-    private String ServletPATH  =   "/ex3/Voting";
-    private int CookiesTime     =   60*60*24*30;
+    private  Map<String,URLclass> URLs ;                //  Map of URLs classes
+    private Cookie[] cookies;                           // cookies
+    private int VoteCounter;                            // person vote counter
+    private String ServletPATH      =   "/ex3/Voting";  // path to servlet
+    private int CookiesTime         =   60*60*24*30;    // cooies timer
+    private boolean fileNotFound    =   false;          // file not find flag
+    private boolean fileIsEmpty     =   false;          // File empty flag
 
 }
 //==============================================================================

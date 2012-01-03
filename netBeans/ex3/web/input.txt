@@ -5,3 +5,6 @@ http://nm.ru
 http://www.stackoverflow.com
 http://elementy.ru
 http://www.hemi.nsu.ru
+http://www.ebay.com
+http://www.facebook.com
+http://www.di.fm
