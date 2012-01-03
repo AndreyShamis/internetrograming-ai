@@ -1,7 +1,0 @@
-HTTP://www.google.com
-http://www.gov.il
-http://www.hadassah.ac.il
-http://nm.ru
-http://www.stackoverflow.com
-http://elementy.ru
-http://www.hemi.nsu.ru
