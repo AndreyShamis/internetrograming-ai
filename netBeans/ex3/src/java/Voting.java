@@ -50,12 +50,16 @@ public class Voting extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter(); //  get response out object
         
-        if(request.getContentType() != null ){                                      //HASER TEUD
+        // Check if the request come from POST
+        if(request.getContentType() != null ){
+            //  Do vote process
             VotingProccess( request, response);
+            //  Prepare http header for user brouser
             response.setStatus(301);
             response.setHeader("Location",ServletPATH);
             response.setHeader( "Connection", "close" );
         }else{
+            //  In simply case print the form and the results
             out.println(PrepareHTMLbody());
         }
         
@@ -70,7 +74,8 @@ public class Voting extends HttpServlet {
     {
         String retHTML = "";            //  Return variable
         //  Buld the page
-        retHTML +="<html>\n<head>\n"
+        retHTML +="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">  "
+                + "<html>\n<head>\n"
                 + "<title>Servlet Voting</title>\n"
                 + "<link rel='stylesheet' "
                 + "type='text/css' href='voting.css' />\n"
@@ -128,9 +133,9 @@ public class Voting extends HttpServlet {
             String urlName = URLDecoder.decode(tempURL.GetURLName());
             //  Start build HTML
             retHTML +="<tr>\n<td>\n"
-            + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> *"
+            + "   <div class='votingFormUrlLinkBox'><strong>"+ urlName+"</strong><br/> "
             + " <label class='urlDesc'>Votes : _. Points : "+tempURL.getPoints()+""
-            + " / "+(int)tempURL.getPoints()+" (Int / Double)</label></div>\n"        //  TODO :: Check this KETA code <int>
+            + " / "+(int)tempURL.getPoints()+" (Double/Int)</label></div>\n"   
             + "</td>\n<td style=\"width:80%;\">\n"
             + "   <div class=\"bar_wrap\">\n"
             + "       <div class=\"bar\" style=\"width:" + tempURL.getPoints()*10  + "%\">\n";
@@ -168,6 +173,7 @@ public class Voting extends HttpServlet {
         if(!searchString.equals("true")){
             //  If not found create 
             Cookie votedCookie = new Cookie("HaveVoted", "true");
+            votedCookie.setMaxAge(CookiesTime);  //  time of cookies
             response.addCookie(votedCookie); 
             VoteCounter++;              //  Increase the counter
         }
