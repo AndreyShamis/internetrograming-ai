@@ -56,6 +56,7 @@ http://google.com
    <li>Second user does not have to vote once for all links, that is, he can vote for as many options as he wants and it will next be able to vote for those for which he has not voted but it will not be able to vote for those for which he had voted before.
    <li>Thirdly there is also use cookies to count the number of users, that is, if a person has voted at least once, he scored once, if he will vote again this is not counted towards!
  </ul>
+ <p><strong>Cookies</strong> will be stored for one<strong> month</strong>. It can be <strong>change</strong> in voting servlet.</p>
 <h3>Future - Cookies/ Output Errors</h3>
 &nbsp;Because of the technical features of the cookies as well as the specific approach this problem in our group. <br>
 Which is manifested in the construction of forms of voting, which in turn is built dynamically for each user, depending on its previous votes. <br>
@@ -72,6 +73,19 @@ At the same Advantages to face: <br>
 &nbsp;Also our project can detect the absence of a file (<strong>file not exist</strong>) and show the error. <br>
 But other than that the main feature is a file verification check on the occurrence of values in the file! <br>
 That is, if the file suddenly for <strong>some reason was empty</strong>, then the error about it will be displayed that <strong>shows the input file is empty</strong>!
+<hr>
+<h3>Future - Exception report to Server Log file   </h3>
+&nbsp;we have design  our code with grate debug report, we are printing any importante information to the Server Log file <br>
+<ul>
+  <li>start point of our Servlet - write: when the Servlet start to run (date and time)
+        <ul>
+            <li> for that featcher  we develop specific class that give the option to get current date and time in many formats (See "DateUtil" Class implementation)
+        </ul>
+  <li>any exceptions that happened also reported to the Server Log file
+  <li>end of reading file
+  <li>and match more
+</ul>
+
 <hr>
 
 <h4>Bugs: no known bugs. </h4>  <br>

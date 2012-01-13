@@ -191,6 +191,7 @@ public class Voting extends HttpServlet {
                 CookiesFlag = true;     //  if success set this flag
             }catch(Exception ex){       //  else set error code 1
                 ErrorCode = "1";
+                getServletContext().log("Exception Happened! When User try to entered not numeric vote simbols" );
             }
             //  If success convert the string into int
             if(CookiesFlag){
@@ -208,6 +209,7 @@ public class Voting extends HttpServlet {
                         //  This section can happend if the value not in the range
                         ErrorCode = "2";                    //  set error code
                         CookiesFlag = false;                //  set flag
+                        getServletContext().log("Exception Happened! When User have voted out of renge" );
                     }
                 }
             }
@@ -318,10 +320,15 @@ public class Voting extends HttpServlet {
     public void init() throws ServletException {
         int counter = 0;      // count num of URLs have read from input file
         String FilePath = "";
+        
+        // Print Start time and date of servlet.
+        getServletContext().log(getServletConfig().getServletName() +
+                "Servlet Has start on:" + DateUtils.now("dd.MM.yyyy 'at' hh:mm:ss a,z") );
+        
         FilePath = getServletContext().getRealPath("") // get input file fath
                 + File.separatorChar 
                 + getServletConfig().getInitParameter("urlsFile").toString();
-        
+
         ReadFile rf = null;             //  input class
         String url ="";                 //  url
                              //  read default file
@@ -329,6 +336,7 @@ public class Voting extends HttpServlet {
             rf = new ReadFile(FilePath);    // create file reader
         } catch (FileNotFoundException ex) {
             fileNotFound = true;
+            getServletContext().log("Exeption Hapend! File of URLs not found. " );
             Logger.getLogger(Voting.class.getName()).log(Level.SEVERE, null, ex);
         }
         URLs = new HashMap<String,URLclass>();  // Set Hash Map to work with URLs
@@ -340,9 +348,10 @@ public class Voting extends HttpServlet {
                 url = URLEncoder.encode(url, "UTF-8");
                 URLs.put(url,new URLclass(url)) ;
             }catch(IOException e) {             // IO Exception
-                System.out.println(e.getMessage());
+                getServletContext().log(e.getMessage());
                 break;
             }catch(Exception endFile){
+                getServletContext().log(endFile.getMessage() + " reading");
                 break;
             }
             counter++;                          // count num of urls
@@ -350,7 +359,7 @@ public class Voting extends HttpServlet {
         try{
             rf.close();                         // close input reder file.
         }catch(IOException cl){
-            System.out.println(cl.getMessage());// IO Exception
+            getServletContext().log("Exeption Hapend! " + cl.getMessage());// IO Exception
         }
         if(counter == 0){                       // check if file is empty
             fileIsEmpty = true;
