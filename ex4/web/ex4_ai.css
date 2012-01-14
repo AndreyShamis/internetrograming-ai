@@ -1,0 +1,55 @@
+/* 
+    Document   : ex4_ai
+    Created on : Jan 12, 2012, 11:46:20 PM
+    Author     : ilia
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root { 
+    display: block;
+}
+
+
+
+
+.menu_link
+{
+    background-color:#1240ab;
+    color:aliceblue;
+}
+
+.menu
+{
+
+    color:aliceblue;
+    text-align:left;
+    background-color:#1240ab;
+    
+}
+.right_window{
+    width: 80%;
+    border: 1px solid #434233;
+}
+.left_window{
+    width: 20%;
+    border: 1px solid #434233;    
+}
+.home_window{
+    background-color: darkseagreen;
+}
+a{
+    font-size: 16px;
+    color:aliceblue;
+    width: 100px;
+    height: 20px;
+    background-color:#1240ab;
+}
+a:hover {background-color:#4671d5;}
+a:hover {color:#ffffff;}
+a:link {text-decoration:none;}
