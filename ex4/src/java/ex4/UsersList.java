@@ -13,40 +13,43 @@ import java.util.ArrayList;
 
 /**
  *
- * @author admn
+ * This clas provide tools for site to know wich user are loged in 
  */
 public class UsersList extends HttpServlet {
         private ArrayList<String>  userss = new ArrayList<String>();
 //=============================================================================
         /**
-         * 
+         * Function wich return list of users are logened
          * @return 
          */
         public String[] AllUsersList(){
+            //  Temp variable be retuned
             String[] users  =  new String[userss.size()];
             for(int i=0;i<users.length;i++){
-                users[i] = userss.get(i);
+                users[i] = userss.get(i);   //  get each user from data
             }
-            return users;
+            return users;                   //  return array
         }
 //=============================================================================
         /**
-         * 
-         * @param userName 
+         * Function wich add user by name into array wich loged in now
+         * @param userName  Login User name
          */
         public void AddUserToList(String userName){
-            userss.add(userName);
+            userss.add(userName);           //  adding
         }
 //=============================================================================
         /**
-         * 
-         * @param userName 
+         * Remove user from array by name wich do logout now
+         * @param userName Login User name
          */
         public void RemoveUserFromList(String userName){
+            //  Start looking for user in array
             for(int i=0;i<userss.size();i++){
+                //  Check if find the user
                 if(userss.get(i).equals(userName)){
-                    userss.remove(i);
-                    break;
+                    userss.remove(i);           //  remove
+                    break;                      //  breake
                 }      
             }
         }
