@@ -3,8 +3,6 @@
     Created on : Jan 11, 2012, 8:37:32 PM
     Author     : ilia
 --%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <br/>
 <div class="home_window">
     
