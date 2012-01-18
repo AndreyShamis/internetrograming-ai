@@ -9,8 +9,8 @@
         LogName = "";
     }
 %>
-<table>
-    <tr class="menu">
+<table class="menu">
+    <tr>
         <td class="tdUserMenuLeft"> 
         <strong>
             <%if(LogName.length() < 1){%>
