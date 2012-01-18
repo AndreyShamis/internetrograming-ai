@@ -5,17 +5,19 @@
 
 */
 body,html{  
-	margin: 0;  
-	padding: 0;  
-        font-size: 19px;
-        color: #0f116e;
-        font-family: tahoma;
-        height: 100%;
-        
+    margin: 0;  
+    padding: 0;  
+    font-size: 20px;
+    color: #0f116e;
+    font-family: tahoma;
+    height: 100%;
 }  
 table{
     width: 100%;
     height: 100%;
+}
+td{
+    vertical-align: top;
 }
 .menu_link{
     background-color:#1240ab;
@@ -60,8 +62,8 @@ input{
     color:aliceblue;
     text-align:left;
     background-color:#1240ab; 
-    height: 25px;
-    padding: 10px;
+    height: 23px;
+    padding: 9px;
     
 position: relative;
 }
@@ -81,7 +83,7 @@ position: relative;
 }
 .chatWindow{
    height: 99%;
-   width: 79%;
+   width: 80%;
    position: absolute;
    border: 1px solid #434233;
 }
@@ -119,10 +121,10 @@ a:link {
 }
 
 .logintdfree{
-    width: 15%;
+    width: 20%;
 }
 .logintd{
-    width: 35%;
+    width: 30%;
     background-color: inherit;
 }
 .loginTable{
@@ -140,6 +142,7 @@ a:link {
 }
 .userNameinList{
     font-size: 20px;
+    margin-left: 6px;
     background-color: darkseagreen;
 }
 .userNameinList:hover{

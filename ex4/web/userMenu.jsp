@@ -12,10 +12,13 @@
 <table class="menu">
     <tr>
         <td class="tdUserMenuLeft"> 
-        <strong>
+        <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <%if(LogName.length() < 1){%>
-                <a class="menu_link" href="login.jsp" >LogIn</a>&nbsp;&nbsp;&nbsp;
-                <a class="menu_link" href="registration.jsp">Registration</a>
+                <%if(page.toString().matches(".*registration.*")){ %>
+                    <a class="menu_link" href="login.jsp" >LogIn</a>
+                <%}else{%>
+                    <a class="menu_link" href="registration.jsp">Registration</a>
+                <%}%>
             <%}else{%>
             <a class ="menu_link" href="logout.jsp">LogOut</a> 
             <%} %>  
