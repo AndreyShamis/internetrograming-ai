@@ -1,18 +1,35 @@
 <%-- 
     Document   : userMenu
     Created on : Jan 12, 2012, 10:40:48 PM
-    Author     : ilia
+    Author     : Andrey Shamis AND Ilia Gaysinsky
 --%>
-<table width="100%">
+<%
+    String LogName =  (String)session.getAttribute("Login");
+    if(LogName == null){
+        LogName = "";
+    }
+%>
+<table>
     <tr class="menu">
-        <td> 
+        <td class="tdUserMenuLeft"> 
         <strong>
-                <a class ="menu_link" href="login.jsp" >LogIn</a> | 
-                <a class ="menu_link" href="logout.jsp">LogOut</a> | 
-                <a class ="menu_link" href="registration.jsp">Registration</a>    | 
-                <a class ="menu_link" href="index.jsp">Index</a>  |
+            <%if(LogName.length() < 1){%>
+                <a class="menu_link" href="login.jsp" >LogIn</a>&nbsp;&nbsp;&nbsp;
+                <a class="menu_link" href="registration.jsp">Registration</a>
+            <%}else{%>
+            <a class ="menu_link" href="logout.jsp">LogOut</a> 
+            <%} %>  
         </strong>    
         </td>
-        <td> <strong>Welcome <%=(String)session.getAttribute("Login")%></strong></td>
+        <td class="tdUserMenuRight"><strong> 
+<%
+                if(LogName.length() < 1){
+        %>Please login<%
+                }else{
+        %>Welcome <%=LogName%><%
+                }
+
+%>                             
+        </strong></td>
     </tr>
 </table>

@@ -1,7 +1,7 @@
 <%-- 
     Document   : index
     Created on : Jan 12, 2012, 8:40:19 PM
-    Author     : ilia
+    Author     : EX4 Andrey Shamis AND Ilia Gaysinsky
 --%>
 <%
 
@@ -19,10 +19,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="ex4_ai.css" type="text/css" />
-        <title>Hadassah Book</title>
+        <title>EX4 Andrey Shamis AND Ilia Gaysinsky</title>
     </head>
     <body>
-        <%@include file="userMenu.jsp" %><br/>
+        <%@include file="userMenu.jsp" %>
         <%@include file="home.jsp" %>
     </body>
 </html>

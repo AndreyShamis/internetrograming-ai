@@ -1,7 +1,7 @@
 <%-- 
     Document   : login
     Created on : Jan 12, 2012, 10:39:23 PM
-    Author     : ilia
+    Author     : EX4 Andrey Shamis AND Ilia Gaysinsky
 --%>
 <%@page isThreadSafe="false" %>
 <jsp:useBean id="DB" class="ex4.DerbyDataBase"  scope="page" /> 
@@ -48,12 +48,33 @@
     </head>
     <body>
         <%@include file="userMenu.jsp" %>
-        <h1>Please login</h1>
         <form method="post" action="login.jsp">
-            <input type="text" name="login" value="<%=login%>" />
-            <input type="password" name="pass" value=""/>
-            <input type="submit" value="Login ..." />
-            <%=ErrorMess%>
+            
+        <table class="loginTable">
+            <tr>
+                <td class="logintdfree"></td>
+                <td colspan="2" class="login_title"><h1>Please login</h1><%=ErrorMess%></td>
+                <td class="logintdfree"></td>
+            </tr>
+            <tr>
+                <td class="logintdfree"></td>
+                <td class="logintd">Enter Login Name</td>
+                <td class="logintd"><input type="text" name="login" value="<%=login%>" /></td>
+                <td class="logintdfree"></td>
+            </tr>
+            <tr>
+                <td class="logintdfree"></td>
+                <td class="logintd">Enter password</td>
+                <td class="logintd"><input type="password" name="pass" value=""/></td>
+                <td class="logintdfree"></td>
+            </tr>
+            <tr>
+                <td class="logintdfree"></td>
+                <td class="logintd"></td>
+                <td class="logintd"><input type="submit" value="Login ..." /></td>
+                <td class="logintdfree"></td>
+            </tr>
+        </table>
         </form>
     </body>
 </html>

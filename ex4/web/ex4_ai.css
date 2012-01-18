@@ -1,40 +1,41 @@
 /* 
     Document   : ex4_ai
     Created on : Jan 12, 2012, 11:46:20 PM
-    Author     : ilia
+    Author     : EX4 Andrey Shamis AND Ilia Gaysinsky
     Description:
         Purpose of the stylesheet follows.
 */
-
-/* 
-   TODO customize this sample style
-   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
-*/
-
-root { 
-    display: block;
+body{  
+	margin: 0;  
+	padding: 0;  
+}  
+table{
+    width: 100%;
 }
-
-
-
-
-.menu_link
-{
+.menu_link{
     background-color:#1240ab;
     color:aliceblue;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    margin: 2px;
+    padding: 8px;
 }
-
-.menu
-{
-
+.menu{
     color:aliceblue;
     text-align:left;
-    background-color:#1240ab;
-    
+    background-color:#1240ab; 
+    width: 25px;
 }
 .right_window{
     width: 80%;
     border: 1px solid #434233;
+    min-height: 300px;
 }
 .left_window{
     width: 20%;
@@ -44,12 +45,58 @@ root {
     background-color: darkseagreen;
 }
 a{
-    font-size: 16px;
+    font-size: 18px;
     color:aliceblue;
-    width: 100px;
-    height: 20px;
     background-color:#1240ab;
 }
-a:hover {background-color:#4671d5;}
-a:hover {color:#ffffff;}
-a:link {text-decoration:none;}
+a:hover {
+    background-color:#4671d5;
+    color:#ffffff;
+}
+a:link {
+    text-decoration:none;
+}
+.registriontdfree{
+    width: 15%;
+}
+.registriontd{
+    width: 35%;
+    background-color: inherit;
+}
+.registrationTable{
+    width: 100%;
+    border: 1px solid moccasin;
+}
+.register_title{
+    text-align: center;
+}
+
+.logintdfree{
+    width: 15%;
+}
+.logintd{
+    width: 35%;
+    background-color: inherit;
+}
+.loginTable{
+    width: 100%;
+    border: 1px solid moccasin;
+}
+.login_title{
+    text-align: center;
+}
+.tdUserMenuRight{
+    width: 20%;
+}
+.tdUserMenuLeft{
+    width: 80%;
+}
+.userNameinList{
+    font-size: 20px;
+    background-color: darkseagreen;
+}
+.userNameinList:hover{
+    -webkit-transition: background 0.5s ease, color 0.3s ease;
+    color: #fd6868;
+    font-weight: bold;
+}
