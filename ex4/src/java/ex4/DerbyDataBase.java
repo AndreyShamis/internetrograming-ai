@@ -20,7 +20,7 @@ public class DerbyDataBase implements DataBase {
 //=============================================================================  
     /** Creates a new instance of DerbyDataBase */
     public DerbyDataBase () throws Exception {
-        this("ImageDataBase");
+        this("ex4");
     }
 //=============================================================================
     /**
@@ -116,7 +116,7 @@ public class DerbyDataBase implements DataBase {
         try {
             System.out.println("Start table creation");     //  user message
             statement = dbConnection.createStatement();     //  
-            statement.execute(strCreateUrlTable);           //  Create table
+            statement.execute(strCreateUsersTable);           //  Create table
             bCreatedTables = true;                          //  set ret value
             System.out.println("Table was created");        //  user message
         } catch (SQLException ex) {
@@ -155,13 +155,15 @@ public class DerbyDataBase implements DataBase {
      * @throws Exception ocured when the clas not ready to work with database
      * can happen when the problem in qery template
      */
+    @Override
     public boolean connect() throws Exception {
         String dbUrl = getDatabaseUrl();
         try {
             dbConnection = DriverManager.getConnection(dbUrl, dbProperties);
-            stmtSaveNewRecord = dbConnection.prepareStatement(strSaveUrl, 
+            stmtSaveNewRecord = dbConnection.prepareStatement(strSaveUser, 
                     Statement.RETURN_GENERATED_KEYS);
-            stmtUpdateExistingRecord = dbConnection.prepareStatement(strUpdateUrl);
+            stmtUpdateExistingRecord = dbConnection.prepareStatement(strUpdateUser);
+            stmtGetUserByLogin =dbConnection.prepareStatement(strGetListEntries);
             isConnected = dbConnection != null;
         } 
         catch (SQLException ex) {
@@ -188,6 +190,7 @@ public class DerbyDataBase implements DataBase {
      * Function wich close the connection created by
      * funvtion connect. 
      */
+    @Override
     public void disconnect(){
         if(isConnected) {
             String dbUrl = getDatabaseUrl();
@@ -227,6 +230,7 @@ public class DerbyDataBase implements DataBase {
      * @param records array of url and number of images
      * @return true if query executing success
      */
+    @Override
     public boolean saveRecord(String [] records) {
         boolean id = false;
         ResultSet results = null;
@@ -234,6 +238,8 @@ public class DerbyDataBase implements DataBase {
             stmtSaveNewRecord.clearParameters();
             stmtSaveNewRecord.setString(1, records[0]);
             stmtSaveNewRecord.setString(2, records[1]);
+            stmtSaveNewRecord.setString(3, records[2]);
+            stmtSaveNewRecord.setString(4, records[3]);
             int rowCount = stmtSaveNewRecord.executeUpdate();
             results = stmtSaveNewRecord.getGeneratedKeys();
             if (results.next()) {
@@ -254,6 +260,33 @@ public class DerbyDataBase implements DataBase {
         }
         return id;
     }
+    
+    public boolean isItAxistAtBD(String loginName, String pass) throws Exception
+    {
+
+        //Statement queryStatement    = null;   //    result
+        ResultSet results           = null;   //    result
+
+        try {
+            //queryStatement = dbConnection.createStatement();
+            stmtGetUserByLogin.clearParameters();
+            stmtGetUserByLogin.setString(1, loginName);
+            stmtGetUserByLogin.setString(2, pass);
+
+            results = stmtGetUserByLogin.executeQuery();
+            if(results.next()) {
+               return true;
+            }
+        } catch (SQLException sqle) {
+            throw new Exception(sqle.getMessage() + ":" + strGetListEntries.toString());
+        }
+
+        
+        
+        return false;
+    }
+           
+            
 //=============================================================================
 //    /**
 //     * Function wich execute sql query for all entryes in table
@@ -285,6 +318,7 @@ public class DerbyDataBase implements DataBase {
      * @param records array of url and number of images
      * @return true if success
      */
+    @Override
     public boolean editRecord(String [] records) {
         boolean bEdited = false;
         try {
@@ -304,28 +338,31 @@ public class DerbyDataBase implements DataBase {
     private boolean isConnected;
     private String dbName;
     private PreparedStatement stmtSaveNewRecord;
+    private PreparedStatement stmtGetUserByLogin;
     private PreparedStatement stmtUpdateExistingRecord;
 
     
-    private static final String strCreateUrlTable =
-            "create table APP.IMAGES (" +
-            " URL VARCHAR(256) not null primary key," +
-            " NUM_OF_IMG NUMERIC(11) default 0 not null)";
+    private static final String strCreateUsersTable =
+            "create table APP.USERS (" +
+            " id_login VARCHAR(256) not null primary key," +
+            " id_pass VARCHAR(256) not null," +
+            " id_fname VARCHAR(256) ," +
+            " id_lname VARCHAR(256) )";
     
     
-    private static final String strSaveUrl =
-            "INSERT INTO APP.IMAGES " +
-            "   (URL, NUM_OF_IMG) " +
-            "VALUES (?, ?)";
+    private static final String strSaveUser =
+            "INSERT INTO APP.USERS " +
+            "   (id_login, id_pass, id_fname, id_lname) " +
+            "VALUES (?, ?, ?, ?)";
     
     
     private static final String strGetListEntries =
-            "SELECT * FROM APP.IMAGES "  +
-            "ORDER BY URL ASC";
-    private static final String strUpdateUrl =
-            "UPDATE APP.IMAGES " +
-            "SET NUM_OF_IMG = ? " +
-            "WHERE URL = ? ";
+            "SELECT * FROM APP.USERS "  +
+            " WHERE id_login=? and id_pass=? ";
+    private static final String strUpdateUser =
+            "UPDATE APP.USERS " +
+            "SET id_fname = ? " +
+            "WHERE id_login = ? ";
 }
 //=============================================================================
 //=============================================================================
