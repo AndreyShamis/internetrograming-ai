@@ -277,7 +277,7 @@ public class DerbyDataBase implements DataBase {
                return true;
             }
         } catch (SQLException sqle) {
-            throw new Exception(sqle.getMessage());
+            throw new Exception(sqle.getMessage() + ":" + sqle.getErrorCode());
         }
         return false;
     }
