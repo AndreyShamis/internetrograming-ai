@@ -111,6 +111,7 @@ a:link {
 .registriontd{
     width: 35%;
     background-color: inherit;
+    border-bottom: 1px solid lightgreen;
 }
 .registrationTable{
     width: 100%;

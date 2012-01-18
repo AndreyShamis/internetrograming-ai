@@ -4,6 +4,7 @@
     Author     : EX4 Andrey Shamis AND Ilia Gaysinsky
 --%>
 <jsp:useBean id="Users" class="ex4.UsersList"  scope="application"/> 
+<strong>List of logined users</strong><br />
 <%
   String [] UsersList=Users.AllUsersList();
  

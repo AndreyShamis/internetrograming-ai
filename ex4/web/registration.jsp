@@ -68,7 +68,7 @@
             } 
             
             
-            DB.connect();
+            
 
             if(login.length()<3){
                 loginErr = "Login Name mast have at least 3 charectar";
@@ -80,7 +80,7 @@
                         + "or '<strong>_</strong>'.";
                 isValid = false;            
             }
-                
+            DB.connect();    
             if( isValid==true && DB.isItAxistAtBD(login, pass)){
                 anotherError = "Entered Login Name alredy exist, Pleas enter other Login Name";
                 isValid = false; 
@@ -116,7 +116,7 @@
     </head>
     <body>
         <%@include file="userMenu.jsp" %>
-        <form method="post" action="registration.jsp">
+        <form method="post" action="registration.jsp" id="regForm">
         <table class="registrationTable">
             <tr>
                 <td class="registriontdfree"></td>
