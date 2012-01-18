@@ -26,12 +26,11 @@
         </td>
         <td class="tdUserMenuRight"><strong> 
 <%
-                if(LogName.length() < 1){
-        %>Please login<%
-                }else{
-        %>Welcome <%=LogName%><%
-                }
-
+        if(LogName.length() < 1){
+            %>Please login<%
+        }else{
+            %>Welcome <%=LogName%><%
+        }
 %>                             
         </strong></td>
     </tr>
