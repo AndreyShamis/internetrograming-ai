@@ -165,20 +165,17 @@ public class DerbyDataBase implements DataBase {
             stmtUpdateExistingRecord = dbConnection.prepareStatement(strUpdateUser);
             stmtGetUserByLogin =dbConnection.prepareStatement(strGetListEntries);
             isConnected = dbConnection != null;
-        } 
-        catch (SQLException ex) {
+        }catch (SQLException ex) {
             //  Check if error code is error in case where table not exist
             if(ex.getErrorCode() == 30000){
                 try{
                     createTables(dbConnection); //  call creating table
-                }
-                catch(Exception exc){
+                }catch(Exception exc){
                     //  If table creation failed
-                    throw new Exception("Cannot create table.");
+                    throw new Exception("Cannot create table." + exc.getMessage() + ":" + ex.getMessage());
                 }
                 connect();                  //  call self for test
-            }
-            else{
+            }else{
                 isConnected = false;
                 throw new Exception("ERROR: Cannot connect to data base.");
             }
@@ -231,7 +228,7 @@ public class DerbyDataBase implements DataBase {
      * @return true if query executing success
      */
     @Override
-    public boolean saveRecord(String [] records) {
+    public boolean saveRecord(String [] records) throws Exception{
         boolean id = false;
         ResultSet results = null;
         try {
@@ -240,77 +237,51 @@ public class DerbyDataBase implements DataBase {
             stmtSaveNewRecord.setString(2, records[1]);
             stmtSaveNewRecord.setString(3, records[2]);
             stmtSaveNewRecord.setString(4, records[3]);
+            stmtSaveNewRecord.setString(5, records[4]);
             int rowCount = stmtSaveNewRecord.executeUpdate();
             results = stmtSaveNewRecord.getGeneratedKeys();
             if (results.next()) {
                 id = true;
             }
-             System.out.println("The new entry was added.");
         } catch(SQLException sqle) {
             //  Catch exeption if entry exist in db
-            if("23505".equals(sqle.getSQLState()))
-            {
-                System.out.println("The URL entry ("+ records[0] +")"
-                        + " already exist.");
-            }
-            else{
-                System.out.println("ERROR: sql - write to data base. "
+            if("23505".equals(sqle.getSQLState())){
+                 throw new Exception("The Login Name already exist with this name.");
+            } else{
+                throw new Exception("ERROR: sql - write to data base. "
                         + "Result is " + sqle.getSQLState() + "." );
             }
         }
         return id;
     }
-    
+//============================================================================= 
+    /**
+     * Function wich check if user exist in data base by user login name
+     * and password
+     * @param loginName Login name
+     * @param pass      Password
+     * @return          Return true if exist
+     * @throws Exception Exception wich can be in sql
+     */
+    @Override
     public boolean isItAxistAtBD(String loginName, String pass) throws Exception
     {
-
-        //Statement queryStatement    = null;   //    result
         ResultSet results           = null;   //    result
 
         try {
-            //queryStatement = dbConnection.createStatement();
             stmtGetUserByLogin.clearParameters();
             stmtGetUserByLogin.setString(1, loginName);
             stmtGetUserByLogin.setString(2, pass);
-
             results = stmtGetUserByLogin.executeQuery();
             if(results.next()) {
                return true;
             }
         } catch (SQLException sqle) {
-            throw new Exception(sqle.getMessage() + ":" + strGetListEntries.toString());
+            throw new Exception(sqle.getMessage());
         }
-
-        
-        
         return false;
     }
            
-            
-//=============================================================================
-//    /**
-//     * Function wich execute sql query for all entryes in table
-//     * @return list of lists of strings
-//     */
-//    public ArrayList<ArrayList<String>> getListEntries()  throws Exception{
-//        ArrayList<ArrayList<String>> listEntries = new ArrayList<>();
-//        Statement queryStatement    = null;   //    result
-//        ResultSet results           = null;   //    result
-//        
-//        try {
-//            queryStatement = dbConnection.createStatement();
-//            results = queryStatement.executeQuery(strGetListEntries);
-//            while(results.next()) {
-//                ArrayList<String> dbLine = new ArrayList<>();
-//                dbLine.add(results.getString(1));   //  Set url entry
-//                dbLine.add(results.getString(2));   //  set image entry
-//                listEntries.add(dbLine);            //  put into list
-//            }
-//        } catch (SQLException sqle) {
-//            throw new Exception("ERROR: sql - read from data base");
-//        }
-//        return listEntries;
-//    }
 //============================================================================= 
     /**
      * Function wich rovide otions to update the data base
@@ -328,7 +299,6 @@ public class DerbyDataBase implements DataBase {
             stmtUpdateExistingRecord.executeUpdate();
             bEdited = true;
         } catch(SQLException sqle) {
-            System.out.println("ERROR: sql - update data base");
         }
         return bEdited;
     }
@@ -345,6 +315,7 @@ public class DerbyDataBase implements DataBase {
     private static final String strCreateUsersTable =
             "create table APP.USERS (" +
             " id_login VARCHAR(256) not null primary key," +
+            " id_mail VARCHAR(256) not null," +
             " id_pass VARCHAR(256) not null," +
             " id_fname VARCHAR(256) ," +
             " id_lname VARCHAR(256) )";
@@ -352,8 +323,8 @@ public class DerbyDataBase implements DataBase {
     
     private static final String strSaveUser =
             "INSERT INTO APP.USERS " +
-            "   (id_login, id_pass, id_fname, id_lname) " +
-            "VALUES (?, ?, ?, ?)";
+            "   (id_login,id_mail, id_pass, id_fname, id_lname) " +
+            "VALUES (?, ?, ?, ?, ?)";
     
     
     private static final String strGetListEntries =

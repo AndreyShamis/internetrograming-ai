@@ -25,7 +25,7 @@ public interface DataBase {
      * @param records array of url and number of images
      * @return true if query executing success
      */
-    public boolean saveRecord(String [] records);
+    public boolean saveRecord(String [] records)throws Exception;
 //=============================================================================
     /**
      * Function wich execute sql query for all entryes in table
@@ -39,8 +39,17 @@ public interface DataBase {
      * @param records array of url and number of images
      * @return true if success
      */
+//============================================================================= 
     public boolean editRecord(String [] records);
-    
+    /**
+     * Function wich check if user exist in data base by user login name
+     * and password
+     * @param loginName Login name
+     * @param pass      Password
+     * @return          Return tru if exist
+     * @throws Exception Exception wich can be in sql
+     */
+    public boolean isItAxistAtBD(String loginName, String pass) throws Exception;  
 }
 //=============================================================================
 //=============================================================================

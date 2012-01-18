@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Authors: EX4 Andrey Shamis AND Ilia Gaysinsky
  */
 package ex4;
 
@@ -18,7 +17,11 @@ import java.util.ArrayList;
  */
 public class UsersList extends HttpServlet {
         private ArrayList<String>  userss = new ArrayList<String>();
-        
+//=============================================================================
+        /**
+         * 
+         * @return 
+         */
         public String[] AllUsersList(){
             String[] users  =  new String[userss.size()];
             for(int i=0;i<users.length;i++){
@@ -26,15 +29,22 @@ public class UsersList extends HttpServlet {
             }
             return users;
         }
-        
+//=============================================================================
+        /**
+         * 
+         * @param userName 
+         */
         public void AddUserToList(String userName){
-            
             userss.add(userName);
         }
+//=============================================================================
+        /**
+         * 
+         * @param userName 
+         */
         public void RemoveUserFromList(String userName){
             for(int i=0;i<userss.size();i++){
-                if(userss.get(i).equals(userName))
-                {
+                if(userss.get(i).equals(userName)){
                     userss.remove(i);
                     break;
                 }      
@@ -52,16 +62,6 @@ public class UsersList extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /* TODO output your page here
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UsersList</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UsersList at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-             */
         } finally {            
             out.close();
         }
