@@ -22,25 +22,18 @@ public class ServerReader implements Runnable {
     public synchronized void run(){
     
         try {
-
             String buffer = "";
-            
-
             buffer = _reader.readLine();
-           
             _userName = buffer;
-            
             _data.add("## " + _userName + " ## has entered the chat!!!! ##");
-            //System.out.println(_userName + "taskjdkanksnd");
-            //buffer = _reader.readLine();
             while(_reader != null){
-                buffer = _reader.readLine();
+                buffer = _userName + " : " + _reader.readLine();
                 if(buffer == null){
                    // break;
-                }
-                else{
+                }else{
                     _data.add(buffer);
                 }
+                
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ie) {
@@ -49,10 +42,8 @@ public class ServerReader implements Runnable {
             }  
 
         } catch (IOException ioe) {
-            
             System.out.println("Error in Handler : " + ioe.getMessage());
         } 
-  
-          System.out.println("Thread exit run");
+        System.out.println("Thread exit run");
     }
 }

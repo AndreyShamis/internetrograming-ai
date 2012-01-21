@@ -49,28 +49,11 @@ public class ConnectionHandler  implements Runnable{
     private synchronized void StartChat(){
         try {
 		
-            System.out.println("Connect-\n");
-            
-            
+            System.out.println("Connect-\n");  
             _reader = new BufferedReader(new InputStreamReader(_connection.getInputStream()));
             _writer = new PrintWriter(new OutputStreamWriter(_connection.getOutputStream())); 
             new Thread(new ServerReader(_reader,_data,_userName)).start();
             new Thread(new ServerWriter(_writer,_data,_userName)).start(); 
-            
-/*            String buffer = "";
-
-            buffer = _reader.readLine();
-            while(!buffer.equals("")){
-                buffer = _reader.readLine();
-                if(buffer == null){
-                    break;
-                }
-                else{
-                    _data.add(buffer);
-                }
-            }  
-            
-             */
             System.out.println("Start exit run");
           //  _writer.close();
           //  _reader.close();
