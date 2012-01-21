@@ -13,9 +13,9 @@ package chatclient;
 
 import java.applet.*;
 import java.awt.*;
-import java.util.*;
-import java.net.*;
-import java.io.*;
+//import java.util.*;
+//import java.net.*;
+//import java.io.*;
 import java.awt.event.ActionEvent;
 
 /** The applet will connect to a server with default port 5555. The port is specified
@@ -50,8 +50,9 @@ public class ClientApplet extends Applet {
     	{
     		request = chatPanel.getChatLine();
 		// you can put debugging trace in this text area
-   		chatPanel.addFeedbackMsg("User is typing: " + request );
-                strMessage=request;
+                strMessage=request;   		
+                chatPanel.addFeedbackMsg("User is typing: " + request );
+
                 chCl.setStringTosend(request);
 		//...
     	}

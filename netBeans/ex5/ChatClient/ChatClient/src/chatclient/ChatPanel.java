@@ -22,7 +22,9 @@ public class ChatPanel extends Panel
 	
 	private static final int numFeedbackRows = 4;
 	private static final int numFeedbackCols = 40;
-	
+    public void init() {
+        
+    } 
 	/** the ctor of the chatPanel create the 
 	 *  a chat area and a feedback area below it
 	 */

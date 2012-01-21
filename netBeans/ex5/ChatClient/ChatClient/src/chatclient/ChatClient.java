@@ -7,6 +7,8 @@ package chatclient;
 
 import java.net.*;
 import java.io.*;
+import java.awt.*;
+import java.applet.*;
 // Lab session: here is a list of things to be fixed in this client:
 // 1. catch command line error (missing  or wrong arguments) and exit with an error message
 // 2. write a cleanUp method that close streams and sockets no matter what! put calls to this methid in the rigt place
@@ -24,10 +26,12 @@ public class ChatClient implements Runnable{
     public void setStringTosend(String str){
         strToSend = str;
     }
-    
+    public void init() {
+        
+    } 
     public synchronized void run(){
                 
-        String hostname     = "10.0.0.2";//args[0];
+        String hostname     = "localhost";//args[0];
         int port            = 2232; //Integer.parseInt(args[1]);
         String UserName     = "";
         InputStreamReader converter = new InputStreamReader(System.in);
@@ -54,6 +58,9 @@ public class ChatClient implements Runnable{
        //     System.err.println("Connection failed"); 
        //     return;
       //  }
+            
+            
+        //UserName =  getParameter("username");
         if(UserName.length() < 1 || UserName == null){
             UserName = "Test";
             chatPanel.addFeedbackMsg("Your name is:" + UserName);
@@ -76,7 +83,7 @@ public class ChatClient implements Runnable{
                 
                 if(strToSend != null && strToSend.length() > 0){
                     chatPanel.addFeedbackMsg("Send " + UserName + ":" +strToSend);
-                    writer.println(UserName + ":" +strToSend); // client nameargs[2]
+                    writer.println(strToSend); // client nameargs[2]//
                     writer.flush();  
                     strToSend = "";
                 }
