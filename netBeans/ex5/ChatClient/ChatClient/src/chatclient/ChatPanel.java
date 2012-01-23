@@ -10,17 +10,18 @@ package chatclient;
  */
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.Vector;
 
 public class ChatPanel extends Panel
 {
 	
-	private TextField chatLineTxt = null;
+	public TextField chatLineTxt = null;
 	private TextArea chatTxt      = null;
 	private TextArea feedbackTxt  = null;
 	public Button    sendBtn     = null;
 	
-	private static final int numFeedbackRows = 4;
+	private static final int numFeedbackRows = 6;
 	private static final int numFeedbackCols = 40;
     public void init() {
         
@@ -34,7 +35,6 @@ public class ChatPanel extends Panel
         //chat area panel
         Panel chatArea    = createChatAreaPanel();
         Panel feedbackPnl = createFeedbackPanel();
- 	     
 	     add(chatArea,BorderLayout.CENTER);
  	     add(feedbackPnl,BorderLayout.SOUTH);
 	}
@@ -61,6 +61,7 @@ public class ChatPanel extends Panel
 	    //chat text
 	    chatTxt = new TextArea();
 	    chatTxt.setEditable(false);
+            
 	
 	    //adding all componet on the chatArea panel
 	    chatArea.add(chatTxt,BorderLayout.CENTER);
@@ -106,6 +107,7 @@ public class ChatPanel extends Panel
 	 	String retValue =  new String( chatLineTxt.getText() );
 	 	retValue = retValue + "\n";
 	 	chatLineTxt.setText("");
+                chatLineTxt.requestFocusInWindow();
 	 	return retValue;
 	 }
 	 

@@ -23,13 +23,14 @@ public class ClientReader implements Runnable {
                     System.out.println(reply);
                     reply = _reader.readLine();            
                 }
-                Thread.sleep(50);
+                //Thread.sleep(50);
             }
         } catch (IOException ioe1) {
             _chatPanel.addChatText("Error:" + ioe1.getMessage());
-        } catch (InterruptedException ie) {
-            _chatPanel.addChatText("Error:" + ie.getMessage());
-            System.out.println("Error ie ");
-        }
+        
+        } //catch (InterruptedException ie) {
+        //    _chatPanel.addChatText("Error:" + ie.getMessage());
+        //    System.out.println("Error ie ");
+        //}
     }
 }

@@ -17,6 +17,8 @@ import java.awt.*;
 //import java.net.*;
 //import java.io.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /** The applet will connect to a server with default port 5555. The port is specified
  * in the HTML parameters (parameter name is serverPort). You should add the Runnable interface
@@ -25,7 +27,6 @@ import java.awt.event.ActionEvent;
 public class ClientApplet extends Applet {
 
     public  ChatPanel   chatPanel = null;
-    public String strMessage = "";
     public ChatClient chCl = null;
 
     public void init() {
@@ -39,22 +40,48 @@ public class ClientApplet extends Applet {
                 action(evt);
             }
         });
-        chCl = new ChatClient(chatPanel) ;
-        new Thread(chCl).start();
+        chatPanel.chatLineTxt.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                int key = e.getKeyCode();
+                if (key == KeyEvent.VK_ENTER) {
+                    actionKey(e); 
+                }
+            }
+        });
+        try{
+            String UserName = getParameter("username");
+            if(UserName == null || UserName.length() < 1){
+                chatPanel.addChatText("Cannot get UserName. \nPlase refresh your browser.\n");
+            }else{
+                chCl = new ChatClient(chatPanel,UserName) ;
+                new Thread(chCl).start();  
+                
+            }
+
+        }catch(Exception ex){
+            System.out.println("Error : " + ex.getMessage());
+            chatPanel.addFeedbackMsg("Error : " + ex.getMessage() );
+        }
+        chatPanel.chatLineTxt.requestFocusInWindow();   //  TODO :: Don`t work
     }
     
     private synchronized void action(ActionEvent event) {
-    	String request;
-    	
-    	if(event.getSource() == chatPanel.sendBtn) //send button - send a chat line
-    	{
-    		request = chatPanel.getChatLine();
-		// you can put debugging trace in this text area
-                strMessage=request;   		
-                chatPanel.addFeedbackMsg("User is typing: " + request );
-
-                chCl.setStringTosend(request);
-		//...
+    	if(event.getSource() == chatPanel.sendBtn){
+            getTextFromTextArea();
     	}
     }
+    private synchronized void actionKey(KeyEvent event) {
+    	if(event.getSource() == chatPanel.chatLineTxt) {
+            getTextFromTextArea();
+    	}
+    }
+    private synchronized void getTextFromTextArea(){
+        String request;
+        request = chatPanel.getChatLine();
+        // you can put debugging trace in this text area  		
+        chatPanel.addFeedbackMsg("User is typing: " + request );
+        chCl.setStringTosend(request);
+        chatPanel.addFeedbackMsg("Set end User is typing:\n" );
+    }
+    
 }
