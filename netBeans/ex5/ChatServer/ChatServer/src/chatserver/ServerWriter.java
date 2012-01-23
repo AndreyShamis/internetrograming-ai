@@ -8,6 +8,8 @@ import java.net.*;
 import java.io.*;
 import java.util.Vector; 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author ilia
@@ -15,35 +17,47 @@ import java.util.ArrayList;
 public class ServerWriter implements Runnable{
     private PrintWriter _writer                 = null;
     private int lastSend                        = 0;  
-    private volatile  ArrayList<String> _data   = null;
-    private volatile String _userName           = null;
+    private   ArrayList<String> _data   = null;
     
     
-    public ServerWriter(PrintWriter writer, ArrayList<String> data, String userName) {
+    public ServerWriter(PrintWriter writer, ArrayList<String> data) {
         _writer     = writer;
         _data       = data;
-        _userName   = userName;
     }     
     
-    public synchronized void run(){
+    public void run(){
 
         while(true){
+               getDataFromUser();
+        }
+    }
+    
+    private synchronized void getDataFromUser(){
                // System.out.println("Send message to:" + connection.getRemoteSocketAddress().toString());
                // System.out.println("Start send to user :" + _data.size() + " messages.");
             for(int i = lastSend;i<_data.size();i++) {
                 _writer.println(_data.get(i));
                 _writer.flush();                 
                 lastSend++;
-                System.out.println("Start send to user <" + _userName + ">:" +  i + " of " + _data.size() + " messages.");
+                System.out.println("Start send to user :" +  (i+1) + "/" +( _data.size()) + " messages.");
             }
-            //System.out.println("Stop send messages.");
-             //writer.println("w");
-             _writer.flush();
-             try {
-                    Thread.sleep(1000);
-             } catch (InterruptedException ie) {
-                System.out.println("Error sleep ");
-             }
-        }
+            this.notifyAll();
+//        try {
+//            //System.out.println("Stop send messages.");
+//             //writer.println("w");
+//             //_writer.flush();
+//            this.wait(10);
+//             //try {
+//             //       Thread.sleep(500);
+//             //} catch (InterruptedException ie) {
+//             //   System.out.println("Error sleep ");
+//             //}    
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(ServerWriter.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }
+    public void stop(){
+        
+        System.out.println("Thread ServerWriter exit Stop");
     }
 }

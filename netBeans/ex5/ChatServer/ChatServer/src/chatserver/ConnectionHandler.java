@@ -17,6 +17,10 @@ import java.net.*;
 import java.io.*;
 import java.util.Vector; 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 //==============================================================================
 //==============================================================================
 public class ConnectionHandler  implements Runnable{
@@ -26,16 +30,18 @@ public class ConnectionHandler  implements Runnable{
     private PrintWriter _writer                 = null ;
     private BufferedReader _reader              = null;
     private volatile ArrayList<String> _data    = null;
-    private static String _userName             = new String();
+    private ServerReader _sr                     = null;
+    private ServerWriter _sw                     = null;
+    private Map<String,Integer> _usersNames      = null;
    
 //==============================================================================    
     /**
      * Constructs a new ConnectionHandler.
      */
-    public ConnectionHandler(Socket connection,ArrayList<String> data) {
+    public ConnectionHandler(Socket connection,ArrayList<String> data, Map<String,Integer> usersNames) {
         this._connection    = connection;
         _data               = data;
-        _userName           = "";
+        _usersNames         = usersNames;
         
     } 
       
@@ -46,19 +52,49 @@ public class ConnectionHandler  implements Runnable{
         System.out.println("Exit RUN");
     }
     
-    private synchronized void StartChat(){
+    private  void StartChat(){
         try {
 		
             System.out.println("Connect-\n");  
             _reader = new BufferedReader(new InputStreamReader(_connection.getInputStream()));
             _writer = new PrintWriter(new OutputStreamWriter(_connection.getOutputStream())); 
-            new Thread(new ServerReader(_reader,_data,_userName)).start();
-            new Thread(new ServerWriter(_writer,_data,_userName)).start(); 
-            System.out.println("Start exit run");
-          //  _writer.close();
-          //  _reader.close();
-            //connection.close();
+            new Thread(_sr = new ServerReader(_reader, _data)).start(); 
 
+            new Thread(_sw = new ServerWriter(_writer, _data)).start();    
+                
+            //ReadImportantData();
+            System.out.println("Start write username\n");
+            while(_sr.getUserName().length()<1){
+                try {
+
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ConnectionHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            Integer temp;
+                if(_usersNames.containsKey(_sr.getUserName())){
+                    temp = _usersNames.get(_sr.getUserName());
+                    temp +=1;
+                    _usersNames.put(_sr.getUserName(),temp);        
+                }
+                else {
+                    temp = 1;
+                    _usersNames.put(_sr.getUserName(),temp);
+                }
+            while(_reader.read() != -1){
+                try {
+
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ConnectionHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+            System.out.println("Start exit run");
+            this.Stop();   
+            
+            
         } catch (IOException ioe) {
             System.out.println("Error in Handler : " + ioe.getMessage());
         } 
@@ -67,14 +103,54 @@ public class ConnectionHandler  implements Runnable{
     }
     public void Stop(){
         try {
-        _writer.close();
-        _reader.close();
-                } catch (IOException ioe) {
-            System.out.println("Error in Handler : " + ioe.getMessage());
+            _writer.close();
+            _reader.close();
+            _connection.close();
+        
+        } catch (IOException ioe) {
+            System.out.println("IMPORTANT!!!.Error in Handler : " + ioe.getMessage());
         } 
-        System.out.println("Thread Finish");
+        
+        Integer temp;
+        temp = _usersNames.get(_sr.getUserName());
+        temp -=1;
+
+        _usersNames.put(_sr.getUserName(),temp);   
+        if(temp == 0){
+            _usersNames.remove(_sr.getUserName());
+            if(_usersNames.size() == 0){
+                _data.clear();
+            }
+        }
+
+        
+        
+        
+        _sr.stop();
+        _sw.stop();
+        
+        System.out.println("Thread ConnectionHandler Finish");
     }
 
+    private synchronized void ReadImportantData(){
+        this.notifyAll();
+        try {
+            this.wait(100);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ConnectionHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+            while(_sr.getUserName() != null &&  _sr.getUserName().length() < 1 ){
+                try {
+                    Thread.sleep(100);
+                    System.out.println("Sleep\n");
+                } catch (InterruptedException ex) {
+                    System.out.println("huyna\n");
+
+                }
+                this.notifyAll();
+            }   
+    }
 //==============================================================================
     
     // Called by Main Server 

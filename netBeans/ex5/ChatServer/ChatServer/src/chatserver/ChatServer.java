@@ -16,6 +16,8 @@ package chatserver;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // Lab session: here are the things you should do
 // 
@@ -31,12 +33,13 @@ import java.util.ArrayList;
 public class ChatServer {
     //private static ArrayList<ConnectionHandler>  handlers = new ArrayList<ConnectionHandler>();
     private static ArrayList<String>  _data = new ArrayList<String>();
+    private static Map<String,Integer> _usersNames = new HashMap<String,Integer>();
 //==============================================================================
      
 
     public static void main(String[] args) {
         
-        int port            = Integer.parseInt("2232");
+        int port            = Integer.parseInt("5555");
         ServerSocket server = null;
         
         try {
@@ -50,7 +53,7 @@ public class ChatServer {
                 System.out.println("Waiting for connection...");
 
 
-                ConnectionHandler handler   =   new ConnectionHandler(server.accept(),_data);
+                ConnectionHandler handler   =   new ConnectionHandler(server.accept(),_data,_usersNames);
                 //handlers.add(handler);
                 System.out.println("Creating User Handler Thread");
                 try{
